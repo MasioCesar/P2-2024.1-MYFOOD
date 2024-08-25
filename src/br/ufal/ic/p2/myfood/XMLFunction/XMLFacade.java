@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.myfood.XMLFunction;
 
+import br.ufal.ic.p2.myfood.tipousuario.Empresa;
 import br.ufal.ic.p2.myfood.tipousuario.User;
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
@@ -33,6 +34,25 @@ public class XMLFacade {
             System.out.println("Erro ao converter dados do XML: " + e.getMessage());
         }
         return loadedData;
+    }
+
+    private static final String FILE_PATH = "empresas.xml";
+
+    public static void salvarEmpresas(Map<Integer, Empresa> empresas) {
+        try (XMLEncoder encoder = new XMLEncoder(new FileOutputStream(FILE_PATH))) {
+            encoder.writeObject(empresas);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static Map<Integer, Empresa> loadEmpresas() {
+        try (XMLDecoder decoder = new XMLDecoder(new FileInputStream(FILE_PATH))) {
+            return (Map<Integer, Empresa>) decoder.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new HashMap<>();
+        }
     }
 
 

@@ -1,8 +1,10 @@
 package br.ufal.ic.p2.myfood;
 
 import br.ufal.ic.p2.myfood.XMLFunction.XMLFacade;
+import br.ufal.ic.p2.myfood.services.EmpresaManager;
 import br.ufal.ic.p2.myfood.tipousuario.Cliente;
 import br.ufal.ic.p2.myfood.tipousuario.DonoRestaurante;
+import br.ufal.ic.p2.myfood.tipousuario.Empresa;
 import br.ufal.ic.p2.myfood.tipousuario.User;
 
 
@@ -13,12 +15,15 @@ import java.util.Map;
 
 public class Facade {
     private Map<String, User> usersByEmail = new HashMap<>(); // Mapeia o email para o objeto User
+    private EmpresaManager empresaManager = new EmpresaManager();
+
     private int nextUserId = 0; // Gerador de ID único
     private String sessionUser;
     private static final String DATA_FILE = "users_data.xml";
 
     public Facade() {
         loadState();
+        carregarEmpresas();
     }
 
     // Zera o sistema, removendo todos os dados e sessões
@@ -27,6 +32,10 @@ public class Facade {
         usersByEmail.clear();
         sessionUser = null;
         clearDataFile();
+    }
+
+    private void carregarEmpresas() {
+        empresaManager.setEmpresas(XMLFacade.loadEmpresas()); // Carregue empresas do XMLFacade
     }
 
     private static final String CPF_DEFAULT = "DEFAULT";
@@ -199,4 +208,128 @@ public class Facade {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
     }
+
+    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) {
+        User user = usersByEmail.values().stream()
+                .filter(u -> u.getId() == donoId)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Dono nao encontrado."));
+
+        if (!(user instanceof DonoRestaurante)) {
+            throw new IllegalArgumentException("Usuario nao pode criar uma empresa");
+        }
+
+        DonoRestaurante dono = (DonoRestaurante) user;
+
+        // Use EmpresaManager para criar a empresa
+        return empresaManager.criarEmpresa(nome, endereco, tipoCozinha, dono.getId(), dono.getNome());
+    }
+
+
+    // Obtém todas as empresas do usuário
+    public String getEmpresasDoUsuario(int idDono) {
+        User user = usersByEmail.values().stream()
+                .filter(u -> u.getId() == idDono)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+        if (!(user instanceof DonoRestaurante)) {
+            throw new IllegalArgumentException("Usuario nao pode criar uma empresa");
+        }
+
+        DonoRestaurante dono = (DonoRestaurante) user;
+
+        // Filtra empresas no EmpresaManager por donoId
+        StringBuilder sb = new StringBuilder();
+        sb.append("{[");
+        boolean primeiro = true;
+
+        for (Empresa empresa : empresaManager.getEmpresas().values()) {
+            if (empresa.getDonoId() == dono.getId()) {
+                if (!primeiro) {
+                    sb.append(", ");
+                }
+                sb.append("[").append(empresa.getNome()).append(", ").append(empresa.getEndereco()).append("]");
+                primeiro = false;
+            }
+        }
+
+        sb.append("]}");
+        return sb.toString();
+    }
+
+
+    // Obtém o id da empresa pelo nome e índice
+    public int getIdEmpresa(int idDono, String nome, String indice) {
+
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome invalido");
+        }
+
+        if (indice == null) {
+            throw new IllegalArgumentException("Indice invalido");
+        }
+
+        int indiceInt;
+        indiceInt = Integer.parseInt(indice);
+
+        // Verifica se o índice é negativo
+        if (indiceInt < 0) {
+            throw new IllegalArgumentException("Indice invalido");
+        }
+
+        // Verifica se o usuário é um DonoRestaurante
+        User user = usersByEmail.values().stream()
+                .filter(u -> u.getId() == idDono)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Dono nao encontrado."));
+
+        if (!(user instanceof DonoRestaurante)) {
+            throw new IllegalArgumentException("Usuario nao é um dono de restaurante.");
+        }
+
+        DonoRestaurante dono = (DonoRestaurante) user;
+
+        // Verifica empresas associadas ao dono e ao nome fornecido
+        int count = 0;
+        boolean empresaEncontrada = false;
+        for (Empresa empresa : empresaManager.getEmpresas().values()) {
+
+            if (empresa.getNome().equals(nome) && empresa.getDonoId() == dono.getId()) {
+                empresaEncontrada = true;
+                if (count == indiceInt) {
+                    return empresa.getId();
+                }
+                count++;
+            }
+        }
+
+        if (!empresaEncontrada) {
+            throw new IllegalArgumentException("Nao existe empresa com esse nome");
+        }
+
+        throw new IllegalArgumentException("Indice maior que o esperado");
+    }
+
+
+    public String getAtributoEmpresa(int empresaId, String atributo) {
+        Empresa empresa = empresaManager.getEmpresa(empresaId);
+
+        if (empresa == null) {
+            throw new IllegalArgumentException("Empresa nao cadastrada");
+        }
+
+        if (atributo == null || atributo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Atributo invalido");
+        }
+
+        return switch (atributo) {
+            case "nome" -> empresa.getNome();
+            case "endereco" -> empresa.getEndereco();
+            case "dono" -> empresa.getDono();
+            case "tipoCozinha" -> empresa.getTipoCozinha();
+            default -> throw new IllegalArgumentException("Atributo invalido");
+        };
+    }
+
 }
