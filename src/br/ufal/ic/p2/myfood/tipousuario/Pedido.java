@@ -16,6 +16,10 @@ public class Pedido {
         this.estado = estado;
     }
 
+    public Pedido() {
+
+    }
+
     public int getNumero() {
         return numero;
     }

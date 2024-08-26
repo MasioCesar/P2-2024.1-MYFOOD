@@ -31,6 +31,10 @@ public class PedidoManager {
         XMLFacade.salvarPedidos(pedidosPorCliente); // Persistir a limpeza do sistema
     }
 
+    public void setPedidos(Map<Integer, Pedido> pedidosPorCliente) {
+        this.pedidosPorCliente = pedidosPorCliente;
+    }
+
     public int criarPedido(int clienteId, int empresaId) {
         if (empresaManager.isDonoEmpresa(clienteId, empresaId)) {
             throw new IllegalArgumentException("Dono de empresa nao pode fazer um pedido");
@@ -162,20 +166,14 @@ public class PedidoManager {
                 .filter(p -> p.getCliente() == cliente && p.getEmpresa() == empresa)
                 .toList();
 
-        // Filtra apenas os pedidos em aberto
-        List<Pedido> pedidosEmAberto = pedidos.stream()
-                .filter(p -> "aberto".equals(p.getEstado()))
-                .toList();
-
         // Verifica se o índice é válido
-        if (indice >= 0 && indice < pedidosEmAberto.size()) {
+        if (indice >= 0 && indice < pedidos.size()) {
             // Retorna o número do pedido no índice especificado
-            return pedidosEmAberto.get(indice).getNumero();
+            return pedidos.get(indice).getNumero();
         } else {
             throw new IllegalArgumentException("Índice do pedido inválido");
         }
     }
-
 
     public void encerrarSistema() {
         XMLFacade.salvarPedidos(pedidosPorCliente);

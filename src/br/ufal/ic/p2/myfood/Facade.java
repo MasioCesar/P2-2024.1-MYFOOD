@@ -22,7 +22,6 @@ public class Facade {
     private ProdutoManager produtoManager = new ProdutoManager(empresaManager);
     private PedidoManager pedidosManager = new PedidoManager(empresaManager, produtoManager, userManager);
 
-    private int nextUserId = 0; // Gerador de ID único
     private String sessionUser;
     // private static final String DATA_FILE = "users_data.xml";
     // private static final String DATA_FILE = "empresas.xml";
@@ -32,6 +31,7 @@ public class Facade {
         carregarUsers();
         carregarEmpresas();
         carregarProdutos();
+        carregarPedidos();
     }
 
     // Zera o sistema, removendo todos os dados e sessões
@@ -69,6 +69,10 @@ public class Facade {
 
     private void carregarProdutos() {
         produtoManager.setProdutosPorEmpresa(XMLFacade.loadProdutos());
+    }
+
+    private void carregarPedidos() {
+        pedidosManager.setPedidos(XMLFacade.loadPedidos());
     }
 
 
