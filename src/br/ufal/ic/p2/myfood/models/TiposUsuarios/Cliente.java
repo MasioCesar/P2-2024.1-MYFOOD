@@ -1,6 +1,8 @@
-package br.ufal.ic.p2.myfood.tipousuario;
+package br.ufal.ic.p2.myfood.models.TiposUsuarios;
 
-public class Cliente extends User {
+import br.ufal.ic.p2.myfood.models.Usuario;
+
+public class Cliente extends Usuario {
     public Cliente() {
         super();
     }

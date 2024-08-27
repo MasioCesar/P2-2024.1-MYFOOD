@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.tipousuario;
+package br.ufal.ic.p2.myfood.models;
 
 import java.util.*;
 
@@ -58,7 +58,6 @@ public class Pedido {
 
     public void adicionarProduto(Produto produto) {
         produtos.add(produto);
-        System.out.println("OS ITEMS: "+produtos);
     }
 
     public void setProdutos(List<Produto> produtos) {

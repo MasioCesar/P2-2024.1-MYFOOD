@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.tipousuario;
+package br.ufal.ic.p2.myfood.models;
 
 public class Produto {
     private int id;

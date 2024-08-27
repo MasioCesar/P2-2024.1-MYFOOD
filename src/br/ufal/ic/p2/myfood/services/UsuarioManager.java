@@ -1,34 +1,33 @@
 package br.ufal.ic.p2.myfood.services;
 
-import br.ufal.ic.p2.myfood.XMLFunction.XMLFacade;
-import br.ufal.ic.p2.myfood.tipousuario.Cliente;
-import br.ufal.ic.p2.myfood.tipousuario.DonoRestaurante;
-import br.ufal.ic.p2.myfood.tipousuario.User;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUser;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
+import br.ufal.ic.p2.myfood.models.Usuario;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserManager {
-    private Map<String, User> users;
-    private Map<Integer, User> usersById;
+public class UsuarioManager {
+    private Map<String, Usuario> users;
+    private final Map<Integer, Usuario> usersById;
     private int nextUserId = 0;
     private static final String CPF_DEFAULT = "DEFAULT";
 
-    public UserManager() {
-        this.users = XMLFacade.loadUsers();
+    public UsuarioManager() {
+        this.users = XMLUser.loadUsuarios();
         this.usersById = new HashMap<>();
 
-        for (User user : users.values()) {
-            usersById.put(user.getId(), user);
+        for (Usuario usuario : users.values()) {
+            usersById.put(usuario.getId(), usuario);
         }
     }
 
-    public void setUsers(Map<String, User> users) {
+    public void setUsers(Map<String, Usuario> users) {
         this.users = users;
-        // Atualize o mapa de IDs quando os usuários forem definidos
         this.usersById.clear();
-        for (User user : users.values()) {
-            usersById.put(user.getId(), user);
+        for (Usuario usuario : users.values()) {
+            usersById.put(usuario.getId(), usuario);
         }
     }
 
@@ -55,49 +54,49 @@ public class UserManager {
             throw new IllegalArgumentException("Conta com esse email ja existe");
         }
 
-        User user;
+        Usuario usuario;
         int id = nextUserId++;
 
         if (CPF_DEFAULT.equals(cpf)) {
-            user = new Cliente(id, nome, email, senha, endereco);
+            usuario = new Cliente(id, nome, email, senha, endereco);
         } else {
-            user = new DonoRestaurante(id, nome, email, senha, endereco, cpf);
+            usuario = new DonoRestaurante(id, nome, email, senha, endereco, cpf);
         }
 
-        users.put(email, user);
-        usersById.put(user.getId(), user); // Adicione ao mapa de IDs
+        users.put(email, usuario);
+        usersById.put(usuario.getId(), usuario);
 
-        XMLFacade.saveUsers(users);
+        XMLUser.saveUsuarios(users);
     }
 
     public int login(String email, String senha) {
-        User user = users.get(email);
-        if (user != null && user.getSenha().equals(senha)) {
-            return user.getId(); // Retorna o ID do usuário
+        Usuario usuario = users.get(email);
+        if (usuario != null && usuario.getSenha().equals(senha)) {
+            return usuario.getId();
         } else {
             throw new IllegalArgumentException("Login ou senha invalidos");
         }
     }
 
     public String getAtributoUsuario(int id, String atributo) {
-        User user = findUserById(id);
+        Usuario usuario = findUserById(id);
 
-        if (user == null) {
+        if (usuario == null) {
             throw new IllegalArgumentException("Usuario nao cadastrado.");
         }
 
         switch (atributo) {
             case "nome":
-                return user.getNome();
+                return usuario.getNome();
             case "email":
-                return user.getEmail();
+                return usuario.getEmail();
             case "senha":
-                return user.getSenha();
+                return usuario.getSenha();
             case "endereco":
-                return user.getEndereco();
+                return usuario.getEndereco();
             case "cpf":
-                if (user instanceof DonoRestaurante) {
-                    return ((DonoRestaurante) user).getCpf();
+                if (usuario instanceof DonoRestaurante) {
+                    return ((DonoRestaurante) usuario).getCpf();
                 } else {
                     throw new IllegalArgumentException("Usuario nao possui CPF");
                 }
@@ -106,28 +105,27 @@ public class UserManager {
         }
     }
 
-    public User getUser(int userId) {
-        User user = usersById.get(userId); // Use o mapa de IDs
-        if (user == null) {
+    public Usuario getUser(int userId) {
+        Usuario usuario = usersById.get(userId); // Use o mapa de IDs
+        if (usuario == null) {
             throw new IllegalArgumentException("Usuario nao encontrado");
         }
-        return user;
+        return usuario;
     }
 
     private boolean isValidEmail(String email) {
-        // Expressão regular simples para validação de email
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
     }
 
-    private User findUserById(int id) {
-        return usersById.get(id); // Use o mapa de IDs para procurar o usuário
+    private Usuario findUserById(int id) {
+        return usersById.get(id);
     }
 
     public void zerarSistema() {
         users.clear();
-        usersById.clear(); // Limpe também o mapa de IDs
+        usersById.clear();
         nextUserId = 0;
-        XMLFacade.saveUsers(users);
+        XMLUser.saveUsuarios(users);
     }
 }

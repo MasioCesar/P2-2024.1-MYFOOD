@@ -1,8 +1,8 @@
 package br.ufal.ic.p2.myfood.services;
 
-import br.ufal.ic.p2.myfood.XMLFunction.XMLFacade;
-import br.ufal.ic.p2.myfood.tipousuario.Empresa;
-import br.ufal.ic.p2.myfood.tipousuario.Produto;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLProduto;
+import br.ufal.ic.p2.myfood.models.Empresa;
+import br.ufal.ic.p2.myfood.models.Produto;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class ProdutoManager {
     private Map<Integer, Map<Integer, Produto>> produtosPorEmpresa = new HashMap<>();
-    private EmpresaManager empresaManager;
+    private final EmpresaManager empresaManager;
     private int nextProductId = 0;
 
     public ProdutoManager(EmpresaManager empresaManager) {
@@ -51,7 +51,7 @@ public class ProdutoManager {
         Produto produto = new Produto(id, nome, valor, categoria, empresa.getNome());
         produtos.put(id, produto);
         produtosPorEmpresa.put(empresaId, produtos);
-        XMLFacade.salvarProdutos(produtosPorEmpresa);
+        XMLProduto.saveProdutos(produtosPorEmpresa);
         return id;
     }
 
@@ -66,7 +66,6 @@ public class ProdutoManager {
             }
         }
 
-        // If the product is not found, throw an exception
         if (produto == null) {
             throw new IllegalArgumentException("Produto nao cadastrado");
         }
@@ -91,7 +90,7 @@ public class ProdutoManager {
         produto.setValor(valor);
         produto.setCategoria(categoria);
 
-        XMLFacade.salvarProdutos(produtosPorEmpresa);
+        XMLProduto.saveProdutos(produtosPorEmpresa);
     }
 
 
