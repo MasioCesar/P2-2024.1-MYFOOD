@@ -1,6 +1,5 @@
 package br.ufal.ic.p2.myfood.services;
 
-import br.ufal.ic.p2.myfood.exceptions.Usuario.UsuarioNaoEncontradoException;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
 import br.ufal.ic.p2.myfood.models.Empresa;

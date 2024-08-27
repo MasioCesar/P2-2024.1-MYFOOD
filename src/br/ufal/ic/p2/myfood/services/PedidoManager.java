@@ -1,8 +1,5 @@
 package br.ufal.ic.p2.myfood.services;
 
-import br.ufal.ic.p2.myfood.exceptions.Empresa.EmpresaNaoCadastradaException;
-import br.ufal.ic.p2.myfood.exceptions.Empresa.EmpresaNaoEncontradaException;
-import br.ufal.ic.p2.myfood.exceptions.Usuario.UsuarioNaoEncontradoException;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLPedido;
 import br.ufal.ic.p2.myfood.models.Empresa;
 import br.ufal.ic.p2.myfood.models.Pedido;
