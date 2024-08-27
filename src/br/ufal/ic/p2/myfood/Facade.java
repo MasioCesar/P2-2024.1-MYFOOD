@@ -1,31 +1,23 @@
 package br.ufal.ic.p2.myfood;
 
-import br.ufal.ic.p2.myfood.XMLFunction.XMLFacade;
 import br.ufal.ic.p2.myfood.services.EmpresaManager;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLPedido;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLProduto;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUser;
 import br.ufal.ic.p2.myfood.services.PedidoManager;
 import br.ufal.ic.p2.myfood.services.ProdutoManager;
-import br.ufal.ic.p2.myfood.services.UserManager;
-import br.ufal.ic.p2.myfood.tipousuario.Cliente;
-import br.ufal.ic.p2.myfood.tipousuario.DonoRestaurante;
-import br.ufal.ic.p2.myfood.tipousuario.Empresa;
-import br.ufal.ic.p2.myfood.tipousuario.User;
+import br.ufal.ic.p2.myfood.services.UsuarioManager;
+import br.ufal.ic.p2.myfood.models.Empresa;
 
 
-import java.beans.XMLEncoder;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Facade {
-    private UserManager userManager = new UserManager();
-    private EmpresaManager empresaManager = new EmpresaManager(userManager);
+    private UsuarioManager usuarioManager = new UsuarioManager();
+    private EmpresaManager empresaManager = new EmpresaManager(usuarioManager);
     private ProdutoManager produtoManager = new ProdutoManager(empresaManager);
-    private PedidoManager pedidosManager = new PedidoManager(empresaManager, produtoManager, userManager);
-
-    private String sessionUser;
-    // private static final String DATA_FILE = "users_data.xml";
-    // private static final String DATA_FILE = "empresas.xml";
-    // private static final String DATA_FILE = "produtos.xml";
+    private PedidoManager pedidosManager = new PedidoManager(empresaManager, produtoManager, usuarioManager);
 
     public Facade() {
         carregarUsers();
@@ -36,19 +28,16 @@ public class Facade {
 
     // Zera o sistema, removendo todos os dados e sessões
     public void zerarSistema() {
-        // Zerar dados de users
-        userManager.zerarSistema();
-
-        // Zerar dados de empresas
+        usuarioManager.zerarSistema();
         empresaManager.zerarSistema();
-
-        // Zerar dados de produtos
         produtoManager.zerarSistema();
+        pedidosManager.zerarSistema();
 
         // Apagar os arquivos de dados
-        clearDataFile("users_data.xml");
+        clearDataFile("users.xml");
         clearDataFile("empresas.xml");
         clearDataFile("produtos.xml");
+        clearDataFile("pedidos.xml");
     }
 
     // Método auxiliar para apagar um arquivo de dados
@@ -60,19 +49,19 @@ public class Facade {
     }
 
     private void carregarUsers() {
-        userManager.setUsers(XMLFacade.loadUsers());
+        usuarioManager.setUsers(XMLUser.loadUsuarios());
     }
 
     private void carregarEmpresas() {
-        empresaManager.setEmpresas(XMLFacade.loadEmpresas());
+        empresaManager.setEmpresas(XMLEmpresa.loadEmpresas());
     }
 
     private void carregarProdutos() {
-        produtoManager.setProdutosPorEmpresa(XMLFacade.loadProdutos());
+        produtoManager.setProdutosPorEmpresa(XMLProduto.loadProdutos());
     }
 
     private void carregarPedidos() {
-        pedidosManager.setPedidos(XMLFacade.loadPedidos());
+        pedidosManager.setPedidos(XMLPedido.loadPedidos());
     }
 
 
@@ -82,29 +71,27 @@ public class Facade {
         criarUsuario(nome, email, senha, endereco, CPF_DEFAULT);
     }
     public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) {
-        userManager.criarUsuario(nome, email, senha, endereco, cpf);
+        usuarioManager.criarUsuario(nome, email, senha, endereco, cpf);
     }
 
     // Retorna o valor de um atributo específico do usuário
     public String getAtributoUsuario(int id, String atributo) {
-        return userManager.getAtributoUsuario(id, atributo);
+        return usuarioManager.getAtributoUsuario(id, atributo);
     }
 
     public int login(String email, String senha) {
-        return userManager.login(email, senha);
+        return usuarioManager.login(email, senha);
     }
 
 
-    // Encerra o sistema, limpando a sessão
+    // Encerra o sistema
     public void encerrarSistema() {
-        sessionUser = null;
+
     }
-
-
 
     // SEÇÃO EMPRESAS
     public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) {
-        return empresaManager.criarEmpresa(nome, donoId, endereco, tipoCozinha);
+        return empresaManager.criarEmpresa(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
     }
 
 

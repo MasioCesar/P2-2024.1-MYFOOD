@@ -1,6 +1,8 @@
-package br.ufal.ic.p2.myfood.tipousuario;
+package br.ufal.ic.p2.myfood.models.TiposUsuarios;
 
-public class DonoRestaurante extends User {
+import br.ufal.ic.p2.myfood.models.Usuario;
+
+public class DonoRestaurante extends Usuario {
     private String cpf;
 
     public DonoRestaurante() {

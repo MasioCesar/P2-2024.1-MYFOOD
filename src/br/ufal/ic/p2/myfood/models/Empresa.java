@@ -1,18 +1,20 @@
-package br.ufal.ic.p2.myfood.tipousuario;
+package br.ufal.ic.p2.myfood.models;
 
 public class Empresa {
     private int id;
     private String nome;
     private String endereco;
     private String tipoCozinha;
+    private String tipoEmpresa;
     private int donoId;
     private String dono;
 
-    public Empresa(int id, String nome, String endereco, String tipoCozinha, int donoId, String dono) {
+    public Empresa(int id, String nome, String endereco, String tipoCozinha, int donoId, String dono, String tipoEmpresa) {
         this.id = id;
         this.nome = nome;
         this.endereco = endereco;
         this.tipoCozinha = tipoCozinha;
+        this.tipoEmpresa = tipoEmpresa;
         this.donoId = donoId;
         this.dono = dono;
     }
@@ -47,6 +49,14 @@ public class Empresa {
 
     public String getTipoCozinha() {
         return tipoCozinha;
+    }
+
+    public String getTipoEmpresa() {
+        return tipoEmpresa;
+    }
+
+    public void setTipoEmpresa(String tipoEmpresa) {
+        this.tipoEmpresa = tipoEmpresa;
     }
 
     public void setTipoCozinha(String tipoCozinha) {

@@ -1,34 +1,35 @@
 package br.ufal.ic.p2.myfood.services;
 
-import br.ufal.ic.p2.myfood.XMLFunction.XMLFacade;
-import br.ufal.ic.p2.myfood.tipousuario.Empresa;
-import br.ufal.ic.p2.myfood.tipousuario.Pedido;
-import br.ufal.ic.p2.myfood.tipousuario.Produto;
-import br.ufal.ic.p2.myfood.tipousuario.User;
+import br.ufal.ic.p2.myfood.exceptions.Empresa.EmpresaNaoCadastradaException;
+import br.ufal.ic.p2.myfood.exceptions.Empresa.EmpresaNaoEncontradaException;
+import br.ufal.ic.p2.myfood.exceptions.Usuario.UsuarioNaoEncontradoException;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLPedido;
+import br.ufal.ic.p2.myfood.models.Empresa;
+import br.ufal.ic.p2.myfood.models.Pedido;
+import br.ufal.ic.p2.myfood.models.Produto;
+import br.ufal.ic.p2.myfood.models.Usuario;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PedidoManager {
     private Map<Integer, Pedido> pedidosPorCliente = new HashMap<>();
-    private UserManager userManager;
-    private EmpresaManager empresaManager;
-    private ProdutoManager produtoManager;
+    private final UsuarioManager usuarioManager;
+    private final EmpresaManager empresaManager;
+    private final ProdutoManager produtoManager;
 
     private int pedidoNumero = 0;
 
-    public PedidoManager(EmpresaManager empresaManager, ProdutoManager produtoManager, UserManager userManager) {
+    public PedidoManager(EmpresaManager empresaManager, ProdutoManager produtoManager, UsuarioManager usuarioManager) {
         this.empresaManager = empresaManager;
         this.produtoManager = produtoManager;
-        this.userManager = userManager;
+        this.usuarioManager = usuarioManager;
     }
 
     public void zerarSistema() {
         pedidosPorCliente.clear();
         pedidoNumero = 0;
-        XMLFacade.salvarPedidos(pedidosPorCliente); // Persistir a limpeza do sistema
+        XMLPedido.savePedidos(pedidosPorCliente); // Persistir a limpeza do sistema
     }
 
     public void setPedidos(Map<Integer, Pedido> pedidosPorCliente) {
@@ -50,18 +51,9 @@ public class PedidoManager {
         Pedido pedido = new Pedido(numero, clienteId, empresaId, "aberto");
         pedidosPorCliente.put(numero, pedido);
 
-        XMLFacade.salvarPedidos(pedidosPorCliente);
+        XMLPedido.savePedidos(pedidosPorCliente);
         return numero;
     }
-/*
-    public int getNumeroPedido(int cliente, int empresa, int indice) {
-        return pedidos.values().stream()
-                .filter(p -> p.getCliente().equals(cliente) && p.getEmpresa().equals(empresa) && p.getEstado().equals("aberto"))
-                .skip(indice)
-                .map(Pedido::getNumero)
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Pedido nao encontrado"));
-    }*/
 
     public void adicionarProduto(int numeroPedido, int produtoId) {
         Pedido pedido = pedidosPorCliente.get(numeroPedido);
@@ -86,7 +78,7 @@ public class PedidoManager {
         }
 
         pedido.adicionarProduto(produto);
-        XMLFacade.salvarPedidos(pedidosPorCliente); // Persistir alterações
+        XMLPedido.savePedidos(pedidosPorCliente);
     }
 
     public String getPedidos(int pedidoId, String atributo) {
@@ -102,7 +94,7 @@ public class PedidoManager {
 
         switch (atributo) {
             case "cliente":
-                User cliente = userManager.getUser(pedido.getCliente());
+                Usuario cliente = usuarioManager.getUser(pedido.getCliente());
                 if (cliente == null) {
                     throw new IllegalArgumentException("Cliente nao encontrado");
                 }
@@ -141,7 +133,7 @@ public class PedidoManager {
         }
 
         pedido.setEstado("preparando");
-        XMLFacade.salvarPedidos(pedidosPorCliente); // Persistir alterações
+        XMLPedido.savePedidos(pedidosPorCliente);
     }
 
     public void removerProduto(int numero, String nomeProduto) {
@@ -157,26 +149,23 @@ public class PedidoManager {
 
         pedido.removerProduto(nomeProduto);
 
-        XMLFacade.salvarPedidos(pedidosPorCliente);
+        XMLPedido.savePedidos(pedidosPorCliente);
     }
 
     public int getNumeroPedido(int cliente, int empresa, int indice) {
-        // Obtém todos os pedidos do cliente
         List<Pedido> pedidos = pedidosPorCliente.values().stream()
                 .filter(p -> p.getCliente() == cliente && p.getEmpresa() == empresa)
                 .toList();
 
-        // Verifica se o índice é válido
         if (indice >= 0 && indice < pedidos.size()) {
-            // Retorna o número do pedido no índice especificado
             return pedidos.get(indice).getNumero();
         } else {
-            throw new IllegalArgumentException("Índice do pedido inválido");
+            throw new IllegalArgumentException("Indice do pedido invalido");
         }
     }
 
     public void encerrarSistema() {
-        XMLFacade.salvarPedidos(pedidosPorCliente);
+        XMLPedido.savePedidos(pedidosPorCliente);
 
     }
 

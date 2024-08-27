@@ -1,24 +1,25 @@
 package br.ufal.ic.p2.myfood.services;
 
-import br.ufal.ic.p2.myfood.XMLFunction.XMLFacade;
-import br.ufal.ic.p2.myfood.tipousuario.DonoRestaurante;
-import br.ufal.ic.p2.myfood.tipousuario.Empresa;
-import br.ufal.ic.p2.myfood.tipousuario.User;
+import br.ufal.ic.p2.myfood.exceptions.Usuario.UsuarioNaoEncontradoException;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
+import br.ufal.ic.p2.myfood.models.Empresa;
+import br.ufal.ic.p2.myfood.models.Usuario;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class EmpresaManager {
     private Map<Integer, Empresa> empresas = new HashMap<>();
-    private UserManager userManager;
+    private final UsuarioManager usuarioManager;
     private int nextEmpresaId = 0;
 
-    public EmpresaManager(UserManager userManager) {
-        this.userManager = userManager;
+    public EmpresaManager(UsuarioManager usuarioManager) {
+        this.usuarioManager = usuarioManager;
     }
 
-    public int criarEmpresa(String nome, int donoId, String endereco, String tipoCozinha) {
-        User user = userManager.getUser(donoId);
+    public int criarEmpresa(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) {
+        Usuario usuario = usuarioManager.getUser(donoId);
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
@@ -29,28 +30,26 @@ public class EmpresaManager {
             }
         }
 
-        if (!(user instanceof DonoRestaurante)) {
+        if (!(usuario instanceof DonoRestaurante)) {
             throw new IllegalArgumentException("Usuario nao pode criar uma empresa");
         }
 
-        DonoRestaurante dono = (DonoRestaurante) user;
+        DonoRestaurante dono = (DonoRestaurante) usuario;
 
         int empresaId = nextEmpresaId++;
-        Empresa empresa = new Empresa(empresaId, nome, endereco, tipoCozinha, dono.getId(), dono.getNome());
+        Empresa empresa = new Empresa(empresaId, nome, endereco, tipoCozinha, dono.getId(), dono.getNome(), tipoEmpresa);
         empresas.put(empresaId, empresa);
-        XMLFacade.salvarEmpresas(empresas);
+        XMLEmpresa.saveEmpresas(empresas);
 
         return empresaId;
     }
 
     public String getEmpresasDoUsuario(int idDono) {
-        User user = userManager.getUser(idDono);
+        Usuario usuario = usuarioManager.getUser(idDono);
 
-        if (!(user instanceof DonoRestaurante)) {
+        if (!(usuario instanceof DonoRestaurante dono)) {
             throw new IllegalArgumentException("Usuario nao pode criar uma empresa");
         }
-
-        DonoRestaurante dono = (DonoRestaurante) user;
 
         Map<Integer, Empresa> empresas = getEmpresas();
 
@@ -90,15 +89,12 @@ public class EmpresaManager {
         }
 
         // Verifica se o usuário é um DonoRestaurante
-        User user = userManager.getUser(idDono);
+        Usuario usuario = usuarioManager.getUser(idDono);
 
-        if (!(user instanceof DonoRestaurante)) {
+        if (!(usuario instanceof DonoRestaurante dono)) {
             throw new IllegalArgumentException("Usuario nao é um dono de restaurante.");
         }
 
-        DonoRestaurante dono = (DonoRestaurante) user;
-
-        // Verifica empresas associadas ao dono e ao nome fornecido
         int count = 0;
         boolean empresaEncontrada = false;
         for (Empresa empresa : getEmpresas().values()) {
@@ -119,22 +115,6 @@ public class EmpresaManager {
         throw new IllegalArgumentException("Indice maior que o esperado");
     }
 
-    /*
-    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) {
-        // Verificar se o dono existe e é um DonoRestaurante
-        User user = userManager.getUser(donoId);
-
-        if (!(user instanceof DonoRestaurante)) {
-            throw new IllegalArgumentException("Usuário não pode criar uma empresa");
-        }
-
-        DonoRestaurante dono = (DonoRestaurante) user;
-
-        // Criação da empresa usando EmpresaManager
-        return criarEmpresa(nome, endereco, tipoCozinha, dono.getId(), dono.getNome());
-    }
-    */
-
     public Empresa getEmpresa(int empresaId) {
         return empresas.get(empresaId);
     }
@@ -150,7 +130,7 @@ public class EmpresaManager {
     public void zerarSistema() {
         nextEmpresaId = 0;
         empresas.clear();
-        XMLFacade.salvarEmpresas(empresas); // Save the cleared state to the XML file
+        XMLEmpresa.saveEmpresas(empresas);
     }
 
     public boolean isDonoEmpresa(int donoId, int empresaId) {

@@ -1,13 +1,13 @@
-package br.ufal.ic.p2.myfood.tipousuario;
+package br.ufal.ic.p2.myfood.models;
 
-public class User {
+public class Usuario {
     private int id;
     private String nome;
     private String email;
     private String senha;
     private String endereco;
 
-    public User(int id, String nome, String email, String senha, String endereco) {
+    public Usuario(int id, String nome, String email, String senha, String endereco) {
         this.id = id;
         this.nome = nome;
         this.email = email;
@@ -15,7 +15,7 @@ public class User {
         this.endereco = endereco;
     }
 
-    public User() {
+    public Usuario() {
 
     }
 
