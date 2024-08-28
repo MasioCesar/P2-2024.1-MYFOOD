@@ -45,7 +45,7 @@ public class UsuarioManager {
             throw new IllegalArgumentException("Email invalido");
         }
         if (!isValidEmail(email) || email.isEmpty()) {
-            throw new IllegalArgumentException("Formato de email invalido");
+            throw new IllegalArgumentException("Email invalido");
         }
         if (endereco == null || endereco.isEmpty()) {
             throw new IllegalArgumentException("Endereco invalido");
