@@ -4,6 +4,7 @@ import br.ufal.ic.p2.myfood.exceptions.Produto.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLProduto;
 import br.ufal.ic.p2.myfood.models.Empresa;
 import br.ufal.ic.p2.myfood.models.Produto;
+import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -25,19 +26,7 @@ public class ProdutoManager {
     }
 
     public int criarProduto(int empresaId, String nome, float valor, String categoria) throws Exception {
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new NomeInvalidoException();
-        }
-
-        // Validate the product value
-        if (valor <= 0) {
-            throw new ValorInvalidoException();
-        }
-
-        // Validate the product category
-        if (categoria == null || categoria.trim().isEmpty()) {
-            throw new CategoriaInvalidoException();
-        }
+        Validate.validarProduto(nome, valor, categoria);
 
         Map<Integer, Produto> produtos = produtosPorEmpresa.getOrDefault(empresaId, new HashMap<>());
         Empresa empresa = empresaManager.getEmpresa(empresaId);
@@ -69,23 +58,8 @@ public class ProdutoManager {
         if (produto == null) {
             throw new ProdutoNaoCadastradoException();
         }
+        Validate.validarProduto(nome, valor, categoria);
 
-        // Validate the product name
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new NomeInvalidoException();
-        }
-
-        // Validate the product value
-        if (valor <= 0) {
-            throw new ValorInvalidoException();
-        }
-
-        // Validate the product category
-        if (categoria == null || categoria.trim().isEmpty()) {
-            throw new CategoriaInvalidoException();
-        }
-
-        // Update the product attributes
         produto.setNome(nome);
         produto.setValor(valor);
         produto.setCategoria(categoria);

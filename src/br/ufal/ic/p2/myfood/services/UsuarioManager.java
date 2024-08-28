@@ -5,6 +5,7 @@ import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUser;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
 import br.ufal.ic.p2.myfood.models.Usuario;
+import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,43 +33,40 @@ public class UsuarioManager {
         }
     }
 
+    // DONO RESTAURANTE
     public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) throws Exception {
-        if (cpf == null || !CPF_DEFAULT.equals(cpf) && cpf.length() != 14) {
+        if (cpf == null || cpf.length() != 14) {
             throw new CPFInvalidoException();
         }
-        if (nome == null || nome.isEmpty()) {
-            throw new NomeInvalidoException();
-        }
-        if (senha == null || senha.isEmpty()) {
-            throw new SenhaInvalidaException();
-        }
-        if (email == null) {
-            throw new EmailInvalidoException();
-        }
-        if (!isValidEmail(email) || email.isEmpty()) {
-            throw new EmailInvalidoException();
-        }
-        if (endereco == null || endereco.isEmpty()) {
-            throw new EnderecoInvalidoException();
-        }
-        if (users.containsKey(email)) {
-            throw new EmailJaExisteException();
-        }
+        Validate.validarUsuario(nome, email, senha, endereco, users);
 
         Usuario usuario;
         int id = nextUserId++;
 
-        if (CPF_DEFAULT.equals(cpf)) {
-            usuario = new Cliente(id, nome, email, senha, endereco);
-        } else {
-            usuario = new DonoRestaurante(id, nome, email, senha, endereco, cpf);
-        }
+        usuario = new DonoRestaurante(id, nome, email, senha, endereco, cpf);
 
         users.put(email, usuario);
         usersById.put(usuario.getId(), usuario);
 
         XMLUser.saveUsuarios(users);
     }
+
+    // CLIENTE
+    public void criarUsuario(String nome, String email, String senha, String endereco) throws Exception {
+        Validate.validarUsuario(nome, email, senha, endereco, users);
+
+        Usuario usuario;
+        int id = nextUserId++;
+
+        usuario = new Cliente(id, nome, email, senha, endereco);
+
+        users.put(email, usuario);
+        usersById.put(usuario.getId(), usuario);
+
+        XMLUser.saveUsuarios(users);
+    }
+
+
 
     public int login(String email, String senha) throws Exception {
         Usuario usuario = users.get(email);
@@ -114,11 +112,6 @@ public class UsuarioManager {
             throw new UsuarioNaoEncontradoException();
         }
         return usuario;
-    }
-
-    private boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        return email.matches(emailRegex);
     }
 
     private Usuario findUserById(int id) {
