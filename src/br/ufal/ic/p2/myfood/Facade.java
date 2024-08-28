@@ -149,7 +149,7 @@ public class Facade {
         return pedidosManager.criarPedido(cliente, empresa);
     }
 
-    public void adcionarProduto(int numero, int produto) {
+    public void adicionarProduto(int numero, int produto) {
         pedidosManager.adicionarProduto(numero, produto);
     }
 

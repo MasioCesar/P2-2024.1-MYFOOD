@@ -85,7 +85,7 @@ public class PedidoManager {
             throw new IllegalArgumentException("Pedido nao encontrado");
         }
 
-        if (atributo == null) {
+        if (atributo == null || atributo.isEmpty()) {
             throw new IllegalArgumentException("Atributo invalido");
         }
 
@@ -119,7 +119,7 @@ public class PedidoManager {
                 return String.format(Locale.US, "%.2f", valorTotal);
 
             default:
-                throw new IllegalArgumentException("Atributo invalido");
+                throw new IllegalArgumentException("Atributo nao existe");
         }
     }
 
