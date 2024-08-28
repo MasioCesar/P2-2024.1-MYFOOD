@@ -60,12 +60,12 @@ public class Facade {
         pedidosManager.setPedidos(XMLPedido.loadPedidos());
     }
 
-
-    private static final String CPF_DEFAULT = "DEFAULT";
-
+    // Cliente
     public void criarUsuario(String nome, String email, String senha, String endereco) throws Exception {
-        criarUsuario(nome, email, senha, endereco, CPF_DEFAULT);
+        usuarioManager.criarUsuario(nome, email, senha, endereco);
     }
+
+    // Dono Restaurante
     public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) throws Exception {
         usuarioManager.criarUsuario(nome, email, senha, endereco, cpf);
     }
