@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.myfood.services;
 
+import br.ufal.ic.p2.myfood.exceptions.Pedido.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLPedido;
 import br.ufal.ic.p2.myfood.models.Empresa;
 import br.ufal.ic.p2.myfood.models.Pedido;
@@ -33,14 +34,14 @@ public class PedidoManager {
         this.pedidosPorCliente = pedidosPorCliente;
     }
 
-    public int criarPedido(int clienteId, int empresaId) {
+    public int criarPedido(int clienteId, int empresaId) throws Exception {
         if (empresaManager.isDonoEmpresa(clienteId, empresaId)) {
-            throw new IllegalArgumentException("Dono de empresa nao pode fazer um pedido");
+            throw new DonoEmpresaNaoPodeFazerPedidoException();
         }
 
         for (Pedido pedido : pedidosPorCliente.values()) {
             if (pedido.getCliente() == clienteId && pedido.getEmpresa() == empresaId && pedido.getEstado().equals("aberto")) {
-                throw new IllegalArgumentException("Nao e permitido ter dois pedidos em aberto para a mesma empresa");
+                throw new PedidoEmAbertoException();
             }
         }
 
@@ -52,55 +53,55 @@ public class PedidoManager {
         return numero;
     }
 
-    public void adicionarProduto(int numeroPedido, int produtoId) {
+    public void adicionarProduto(int numeroPedido, int produtoId) throws Exception {
         Pedido pedido = pedidosPorCliente.get(numeroPedido);
 
         if (pedido == null) {
-            throw new IllegalArgumentException("Nao existe pedido em aberto");
+            throw new NaoExistePedidoEmAberto();
         }
 
         if (pedido.getEstado().equals("preparando")) {
-            throw new IllegalArgumentException("Nao e possivel adcionar produtos a um pedido fechado");
+            throw new NaoEPossivelAdcionarProdutosAUmPedidoFechado();
         }
 
         Empresa empresaDoPedido = empresaManager.getEmpresa(pedido.getEmpresa());
 
         Produto produto = getProdutoPorId(produtoId);
         if (produto == null) {
-            throw new IllegalArgumentException("Produto nao encontrado");
+            throw new ProdutoNaoEncontradoException();
         }
 
         if (!produto.getEmpresa().equals(empresaDoPedido.getNome())) {
-            throw new IllegalArgumentException("O produto nao pertence a essa empresa");
+            throw new ProdutoNaoPertenceEmpresaException();
         }
 
         pedido.adicionarProduto(produto);
         XMLPedido.savePedidos(pedidosPorCliente);
     }
 
-    public String getPedidos(int pedidoId, String atributo) {
+    public String getPedidos(int pedidoId, String atributo) throws Exception {
         Pedido pedido = pedidosPorCliente.get(pedidoId);
 
         if (pedido == null) {
-            throw new IllegalArgumentException("Pedido nao encontrado");
+            throw new PedidoNaoEncontradoException();
         }
 
         if (atributo == null || atributo.isEmpty()) {
-            throw new IllegalArgumentException("Atributo invalido");
+            throw new AtributoInvalidoException();
         }
 
         switch (atributo) {
             case "cliente":
                 Usuario cliente = usuarioManager.getUser(pedido.getCliente());
                 if (cliente == null) {
-                    throw new IllegalArgumentException("Cliente nao encontrado");
+                    throw new ClienteNaoEncontradoException();
                 }
                 return cliente.getNome();
 
             case "empresa":
                 Empresa empresa = empresaManager.getEmpresa(pedido.getEmpresa());
                 if (empresa == null) {
-                    throw new IllegalArgumentException("Empresa nao encontrada");
+                    throw new EmpresaNaoEncontradaException();
                 }
                 return empresa.getNome();
 
@@ -119,29 +120,29 @@ public class PedidoManager {
                 return String.format(Locale.US, "%.2f", valorTotal);
 
             default:
-                throw new IllegalArgumentException("Atributo nao existe");
+                throw new AtributoNaoExisteException();
         }
     }
 
-    public void fecharPedido(int numero) {
+    public void fecharPedido(int numero) throws Exception {
         Pedido pedido = pedidosPorCliente.get(numero);
         if (pedido == null || !pedido.getEstado().equals("aberto")) {
-            throw new IllegalArgumentException("Pedido nao encontrado");
+            throw new PedidoNaoEncontradoException();
         }
 
         pedido.setEstado("preparando");
         XMLPedido.savePedidos(pedidosPorCliente);
     }
 
-    public void removerProduto(int numero, String nomeProduto) {
+    public void removerProduto(int numero, String nomeProduto) throws Exception {
         if (nomeProduto == null || nomeProduto.trim().isEmpty()) {
-            throw new IllegalArgumentException("Produto invalido");
+            throw new ProdutoInvalidoException();
         }
 
         Pedido pedido = pedidosPorCliente.get(numero);
 
         if (pedido == null || !pedido.getEstado().equals("aberto")) {
-            throw new IllegalArgumentException("Nao e possivel remover produtos de um pedido fechado");
+            throw new NaoPodeRemoverProdutoDePedidoFechadoException();
         }
 
         pedido.removerProduto(nomeProduto);
@@ -149,7 +150,7 @@ public class PedidoManager {
         XMLPedido.savePedidos(pedidosPorCliente);
     }
 
-    public int getNumeroPedido(int cliente, int empresa, int indice) {
+    public int getNumeroPedido(int cliente, int empresa, int indice) throws Exception {
         List<Pedido> pedidos = pedidosPorCliente.values().stream()
                 .filter(p -> p.getCliente() == cliente && p.getEmpresa() == empresa)
                 .toList();
@@ -157,13 +158,12 @@ public class PedidoManager {
         if (indice >= 0 && indice < pedidos.size()) {
             return pedidos.get(indice).getNumero();
         } else {
-            throw new IllegalArgumentException("Indice do pedido invalido");
+            throw new IndicePedidoInvalidoException();
         }
     }
 
     public void encerrarSistema() {
         XMLPedido.savePedidos(pedidosPorCliente);
-
     }
 
     private Produto getProdutoPorId(int produtoId) {

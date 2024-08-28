@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.exceptions.Produto;
+package br.ufal.ic.p2.myfood.exceptions.Pedido;
 
 public class AtributoNaoExisteException extends Exception {
     public AtributoNaoExisteException() {

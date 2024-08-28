@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.myfood.services;
 
+import br.ufal.ic.p2.myfood.exceptions.Produto.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLProduto;
 import br.ufal.ic.p2.myfood.models.Empresa;
 import br.ufal.ic.p2.myfood.models.Produto;
@@ -23,19 +24,19 @@ public class ProdutoManager {
         this.produtosPorEmpresa = produtosPorEmpresa;
     }
 
-    public int criarProduto(int empresaId, String nome, float valor, String categoria) {
+    public int criarProduto(int empresaId, String nome, float valor, String categoria) throws Exception {
         if (nome == null || nome.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nome invalido");
+            throw new NomeInvalidoException();
         }
 
         // Validate the product value
         if (valor <= 0) {
-            throw new IllegalArgumentException("Valor invalido");
+            throw new ValorInvalidoException();
         }
 
         // Validate the product category
         if (categoria == null || categoria.trim().isEmpty()) {
-            throw new IllegalArgumentException("Categoria invalido");
+            throw new CategoriaInvalidoException();
         }
 
         Map<Integer, Produto> produtos = produtosPorEmpresa.getOrDefault(empresaId, new HashMap<>());
@@ -43,7 +44,7 @@ public class ProdutoManager {
 
         for (Produto p : produtos.values()) {
             if (p.getNome().equals(nome)) {
-                throw new IllegalArgumentException("Ja existe um produto com esse nome para essa empresa");
+                throw new ProdutoJaExisteException();
             }
         }
 
@@ -55,8 +56,7 @@ public class ProdutoManager {
         return id;
     }
 
-
-    public void editarProduto(int produtoId, String nome, float valor, String categoria) {
+    public void editarProduto(int produtoId, String nome, float valor, String categoria) throws Exception {
         // Find the product across all companies
         Produto produto = null;
         for (Map<Integer, Produto> produtos : produtosPorEmpresa.values()) {
@@ -67,22 +67,22 @@ public class ProdutoManager {
         }
 
         if (produto == null) {
-            throw new IllegalArgumentException("Produto nao cadastrado");
+            throw new ProdutoNaoCadastradoException();
         }
 
         // Validate the product name
         if (nome == null || nome.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nome invalido");
+            throw new NomeInvalidoException();
         }
 
         // Validate the product value
         if (valor <= 0) {
-            throw new IllegalArgumentException("Valor invalido");
+            throw new ValorInvalidoException();
         }
 
         // Validate the product category
         if (categoria == null || categoria.trim().isEmpty()) {
-            throw new IllegalArgumentException("Categoria invalido");
+            throw new CategoriaInvalidoException();
         }
 
         // Update the product attributes
@@ -93,19 +93,17 @@ public class ProdutoManager {
         XMLProduto.saveProdutos(produtosPorEmpresa);
     }
 
-
-
-    public String getProduto(String nome, int empresaId, String atributo) {
+    public String getProduto(String nome, int empresaId, String atributo) throws Exception {
         Map<Integer, Produto> produtos = produtosPorEmpresa.get(empresaId);
 
         if (produtos == null) {
-            throw new IllegalArgumentException("Empresa nao possui produtos.");
+            throw new EmpresaNaoPossuiProdutosException();
         }
 
         Produto produto = produtos.values().stream()
                 .filter(p -> p.getNome().equals(nome))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Produto nao encontrado"));
+                .orElseThrow(ProdutoNaoEncontradoException::new);
 
         return switch (atributo) {
             case "nome" -> produto.getNome();
@@ -117,16 +115,16 @@ public class ProdutoManager {
             }
             case "categoria" -> produto.getCategoria();
             case "empresa" -> produto.getEmpresa();
-            default -> throw new IllegalArgumentException("Atributo nao existe");
+            default -> throw new AtributoNaoExisteException();
         };
     }
 
-    public String listarProdutos(int empresaId) {
+    public String listarProdutos(int empresaId) throws Exception {
         Map<Integer, Produto> produtos = produtosPorEmpresa.get(empresaId);
 
         Empresa empresa = empresaManager.getEmpresa(empresaId);
         if (empresa == null) {
-            throw new IllegalArgumentException("Empresa nao encontrada");
+            throw new EmpresaNaoEncontradaException();
         }
 
         if (produtos == null || produtos.isEmpty()) {
@@ -155,7 +153,7 @@ public class ProdutoManager {
                 return produto;
             }
         }
-        return null; // Retorna null se o produto não for encontrado
+        return null;
     }
 
     public void zerarSistema() {

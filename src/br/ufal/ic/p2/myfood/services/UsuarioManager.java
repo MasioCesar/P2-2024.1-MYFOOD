@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.myfood.services;
 
+import br.ufal.ic.p2.myfood.exceptions.Usuario.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUser;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
@@ -31,27 +32,27 @@ public class UsuarioManager {
         }
     }
 
-    public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) {
+    public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) throws Exception {
         if (cpf == null || !CPF_DEFAULT.equals(cpf) && cpf.length() != 14) {
-            throw new IllegalArgumentException("CPF invalido");
+            throw new CPFInvalidoException();
         }
         if (nome == null || nome.isEmpty()) {
-            throw new IllegalArgumentException("Nome invalido");
+            throw new NomeInvalidoException();
         }
         if (senha == null || senha.isEmpty()) {
-            throw new IllegalArgumentException("Senha invalido");
+            throw new SenhaInvalidaException();
         }
         if (email == null) {
-            throw new IllegalArgumentException("Email invalido");
+            throw new EmailInvalidoException();
         }
         if (!isValidEmail(email) || email.isEmpty()) {
-            throw new IllegalArgumentException("Email invalido");
+            throw new EmailInvalidoException();
         }
         if (endereco == null || endereco.isEmpty()) {
-            throw new IllegalArgumentException("Endereco invalido");
+            throw new EnderecoInvalidoException();
         }
         if (users.containsKey(email)) {
-            throw new IllegalArgumentException("Conta com esse email ja existe");
+            throw new EmailJaExisteException();
         }
 
         Usuario usuario;
@@ -69,20 +70,20 @@ public class UsuarioManager {
         XMLUser.saveUsuarios(users);
     }
 
-    public int login(String email, String senha) {
+    public int login(String email, String senha) throws Exception {
         Usuario usuario = users.get(email);
         if (usuario != null && usuario.getSenha().equals(senha)) {
             return usuario.getId();
         } else {
-            throw new IllegalArgumentException("Login ou senha invalidos");
+            throw new LoginInvalidoException();
         }
     }
 
-    public String getAtributoUsuario(int id, String atributo) {
+    public String getAtributoUsuario(int id, String atributo) throws Exception {
         Usuario usuario = findUserById(id);
 
         if (usuario == null) {
-            throw new IllegalArgumentException("Usuario nao cadastrado.");
+            throw new UsuarioNaoCadastradoException();
         }
 
         switch (atributo) {
@@ -100,17 +101,17 @@ public class UsuarioManager {
                 if (usuario instanceof DonoRestaurante) {
                     return ((DonoRestaurante) usuario).getCpf();
                 } else {
-                    throw new IllegalArgumentException("Usuario nao possui CPF");
+                    throw new UsuarioSemCPFException();
                 }
             default:
-                throw new IllegalArgumentException("Atributo desconhecido");
+                throw new AtributoDesconhecidoException();
         }
     }
 
-    public Usuario getUser(int userId) {
+    public Usuario getUser(int userId) throws Exception {
         Usuario usuario = usersById.get(userId); // Use o mapa de IDs
         if (usuario == null) {
-            throw new IllegalArgumentException("Usuario nao encontrado");
+            throw new UsuarioNaoEncontradoException();
         }
         return usuario;
     }
