@@ -63,18 +63,18 @@ public class Facade {
 
     private static final String CPF_DEFAULT = "DEFAULT";
 
-    public void criarUsuario(String nome, String email, String senha, String endereco) {
+    public void criarUsuario(String nome, String email, String senha, String endereco) throws Exception {
         criarUsuario(nome, email, senha, endereco, CPF_DEFAULT);
     }
-    public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) {
+    public void criarUsuario(String nome, String email, String senha, String endereco, String cpf) throws Exception {
         usuarioManager.criarUsuario(nome, email, senha, endereco, cpf);
     }
 
-    public String getAtributoUsuario(int id, String atributo) {
+    public String getAtributoUsuario(int id, String atributo) throws Exception {
         return usuarioManager.getAtributoUsuario(id, atributo);
     }
 
-    public int login(String email, String senha) {
+    public int login(String email, String senha) throws Exception {
         return usuarioManager.login(email, senha);
     }
 
@@ -85,62 +85,62 @@ public class Facade {
     }
 
     // SEÇÃO EMPRESAS
-    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) {
+    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) throws Exception {
         return empresaManager.criarEmpresa(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
     }
 
-    public String getEmpresasDoUsuario(int idDono) {
+    public String getEmpresasDoUsuario(int idDono) throws Exception {
         return empresaManager.getEmpresasDoUsuario(idDono);
     }
 
-    public int getIdEmpresa(int idDono, String nome, String indice) {
+    public int getIdEmpresa(int idDono, String nome, String indice) throws Exception {
         return empresaManager.getIdEmpresa(idDono, nome, indice);
     }
 
 
-    public String getAtributoEmpresa(int empresaId, String atributo) {
+    public String getAtributoEmpresa(int empresaId, String atributo) throws Exception {
         return empresaManager.getAtributoEmpresa(empresaId, atributo);
     }
 
     // SEÇÃO PRODUTOS
-    public int criarProduto(int empresaId, String nome, float valor, String categoria) {
+    public int criarProduto(int empresaId, String nome, float valor, String categoria) throws Exception {
         return produtoManager.criarProduto(empresaId, nome, valor, categoria);
     }
 
-    public void editarProduto(int produtoId, String nome, float valor, String categoria) {
+    public void editarProduto(int produtoId, String nome, float valor, String categoria) throws Exception {
         produtoManager.editarProduto(produtoId, nome, valor, categoria);
     }
 
-    public String getProduto(String nome, int empresaId, String atributo) {
+    public String getProduto(String nome, int empresaId, String atributo) throws Exception {
         return produtoManager.getProduto(nome, empresaId, atributo);
     }
 
-    public String listarProdutos(int empresaId) {
+    public String listarProdutos(int empresaId) throws Exception {
         return produtoManager.listarProdutos(empresaId);
     }
 
     // SEÇÃO PEDIDOS
-    public int criarPedido(int cliente, int empresa) {
+    public int criarPedido(int cliente, int empresa) throws Exception {
         return pedidosManager.criarPedido(cliente, empresa);
     }
 
-    public void adicionarProduto(int numero, int produto) {
+    public void adicionarProduto(int numero, int produto) throws Exception {
         pedidosManager.adicionarProduto(numero, produto);
     }
 
-    public String getPedidos(int numero, String atributo) {
+    public String getPedidos(int numero, String atributo) throws Exception {
         return pedidosManager.getPedidos(numero, atributo);
     }
 
-    public void fecharPedido(int numero) {
+    public void fecharPedido(int numero) throws Exception {
         pedidosManager.fecharPedido(numero);
     }
 
-    public void removerProduto(int pedido, String produto) {
+    public void removerProduto(int pedido, String produto) throws Exception {
         pedidosManager.removerProduto(pedido, produto);
     }
 
-    public int getNumeroPedido(int cliente, int empresa, int indice) {
+    public int getNumeroPedido(int cliente, int empresa, int indice) throws Exception {
         return pedidosManager.getNumeroPedido(cliente, empresa, indice);
     }
 

@@ -1,5 +1,6 @@
 package br.ufal.ic.p2.myfood.services;
 
+import br.ufal.ic.p2.myfood.exceptions.Empresa.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
 import br.ufal.ic.p2.myfood.models.Empresa;
@@ -17,20 +18,20 @@ public class EmpresaManager {
         this.usuarioManager = usuarioManager;
     }
 
-    public int criarEmpresa(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) {
+    public int criarEmpresa(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
         Usuario usuario = usuarioManager.getUser(donoId);
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
-                throw new IllegalArgumentException("Empresa com esse nome ja existe");
+                throw new EmpresaJaExisteException();
             }
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getEndereco().equals(endereco)) {
-                throw new IllegalArgumentException("Proibido cadastrar duas empresas com o mesmo nome e local");
+                throw new ProibidoCadastrarDuasEmpresasException();
             }
         }
 
         if (!(usuario instanceof DonoRestaurante)) {
-            throw new IllegalArgumentException("Usuario nao pode criar uma empresa");
+            throw new UsuarioNaoPodeCriarEmpresaException();
         }
 
         DonoRestaurante dono = (DonoRestaurante) usuario;
@@ -43,11 +44,11 @@ public class EmpresaManager {
         return empresaId;
     }
 
-    public String getEmpresasDoUsuario(int idDono) {
+    public String getEmpresasDoUsuario(int idDono) throws Exception {
         Usuario usuario = usuarioManager.getUser(idDono);
 
         if (!(usuario instanceof DonoRestaurante dono)) {
-            throw new IllegalArgumentException("Usuario nao pode criar uma empresa");
+            throw new UsuarioNaoPodeCriarEmpresaException();
         }
 
         Map<Integer, Empresa> empresas = getEmpresas();
@@ -70,13 +71,13 @@ public class EmpresaManager {
         return sb.toString();
     }
 
-    public int getIdEmpresa(int idDono, String nome, String indice) {
+    public int getIdEmpresa(int idDono, String nome, String indice) throws Exception {
         if (nome == null || nome.trim().isEmpty()) {
-            throw new IllegalArgumentException("Nome invalido");
+            throw new NomeInvalidoException();
         }
 
         if (indice == null) {
-            throw new IllegalArgumentException("Indice invalido");
+            throw new IndiceInvalidoException();
         }
 
         int indiceInt;
@@ -84,14 +85,14 @@ public class EmpresaManager {
 
         // Verifica se o índice é negativo
         if (indiceInt < 0) {
-            throw new IllegalArgumentException("Indice invalido");
+            throw new IndiceInvalidoException();
         }
 
         // Verifica se o usuário é um DonoRestaurante
         Usuario usuario = usuarioManager.getUser(idDono);
 
         if (!(usuario instanceof DonoRestaurante dono)) {
-            throw new IllegalArgumentException("Usuario nao é um dono de restaurante.");
+            throw new UsuarioNaoEDonoException();
         }
 
         int count = 0;
@@ -108,21 +109,21 @@ public class EmpresaManager {
         }
 
         if (!empresaEncontrada) {
-            throw new IllegalArgumentException("Nao existe empresa com esse nome");
+            throw new NaoExisteEmpresaComEsseNomeException();
         }
 
-        throw new IllegalArgumentException("Indice maior que o esperado");
+        throw new IndiceMaiorQueOEsperadoException();
     }
 
-    public String getAtributoEmpresa(int empresaId, String atributo) {
+    public String getAtributoEmpresa(int empresaId, String atributo) throws Exception {
         Empresa empresa = getEmpresa(empresaId);
 
         if (empresa == null) {
-            throw new IllegalArgumentException("Empresa nao cadastrada");
+            throw new EmpresaNaoCadastradaException();
         }
 
         if (atributo == null || atributo.trim().isEmpty()) {
-            throw new IllegalArgumentException("Atributo invalido");
+            throw new AtributoInvalidoException();
         }
 
         return switch (atributo) {
@@ -130,7 +131,7 @@ public class EmpresaManager {
             case "endereco" -> empresa.getEndereco();
             case "dono" -> empresa.getDono();
             case "tipoCozinha" -> empresa.getTipoCozinha();
-            default -> throw new IllegalArgumentException("Atributo invalido");
+            default -> throw new AtributoInvalidoException();
         };
     }
 
@@ -152,10 +153,10 @@ public class EmpresaManager {
         XMLEmpresa.saveEmpresas(empresas);
     }
 
-    public boolean isDonoEmpresa(int donoId, int empresaId) {
+    public boolean isDonoEmpresa(int donoId, int empresaId) throws Exception {
         Empresa empresa = empresas.get(empresaId);
         if (empresa == null) {
-            throw new IllegalArgumentException("Empresa nao cadastrada");
+            throw new EmpresaNaoCadastradaException();
         }
         return empresa.getDonoId() == donoId;
     }

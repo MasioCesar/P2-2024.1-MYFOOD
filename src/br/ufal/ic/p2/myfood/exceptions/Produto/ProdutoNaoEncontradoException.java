@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.exceptions.Pedido;
+package br.ufal.ic.p2.myfood.exceptions.Produto;
 
 public class ProdutoNaoEncontradoException extends Exception {
     public ProdutoNaoEncontradoException() {
