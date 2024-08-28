@@ -8,8 +8,6 @@ import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUser;
 import br.ufal.ic.p2.myfood.services.PedidoManager;
 import br.ufal.ic.p2.myfood.services.ProdutoManager;
 import br.ufal.ic.p2.myfood.services.UsuarioManager;
-import br.ufal.ic.p2.myfood.models.Empresa;
-
 
 import java.io.*;
 
@@ -33,14 +31,12 @@ public class Facade {
         produtoManager.zerarSistema();
         pedidosManager.zerarSistema();
 
-        // Apagar os arquivos de dados
         clearDataFile("users.xml");
         clearDataFile("empresas.xml");
         clearDataFile("produtos.xml");
         clearDataFile("pedidos.xml");
     }
 
-    // Método auxiliar para apagar um arquivo de dados
     private void clearDataFile(String fileName) {
         File file = new File(fileName);
         if (file.exists()) {
@@ -74,7 +70,6 @@ public class Facade {
         usuarioManager.criarUsuario(nome, email, senha, endereco, cpf);
     }
 
-    // Retorna o valor de um atributo específico do usuário
     public String getAtributoUsuario(int id, String atributo) {
         return usuarioManager.getAtributoUsuario(id, atributo);
     }
@@ -94,37 +89,17 @@ public class Facade {
         return empresaManager.criarEmpresa(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
     }
 
-
-    // Obtém todas as empresas do usuário
     public String getEmpresasDoUsuario(int idDono) {
         return empresaManager.getEmpresasDoUsuario(idDono);
     }
 
-
-    // Obtém o id da empresa pelo nome e índice
     public int getIdEmpresa(int idDono, String nome, String indice) {
         return empresaManager.getIdEmpresa(idDono, nome, indice);
     }
 
 
     public String getAtributoEmpresa(int empresaId, String atributo) {
-        Empresa empresa = empresaManager.getEmpresa(empresaId);
-
-        if (empresa == null) {
-            throw new IllegalArgumentException("Empresa nao cadastrada");
-        }
-
-        if (atributo == null || atributo.trim().isEmpty()) {
-            throw new IllegalArgumentException("Atributo invalido");
-        }
-
-        return switch (atributo) {
-            case "nome" -> empresa.getNome();
-            case "endereco" -> empresa.getEndereco();
-            case "dono" -> empresa.getDono();
-            case "tipoCozinha" -> empresa.getTipoCozinha();
-            default -> throw new IllegalArgumentException("Atributo invalido");
-        };
+        return empresaManager.getAtributoEmpresa(empresaId, atributo);
     }
 
     // SEÇÃO PRODUTOS

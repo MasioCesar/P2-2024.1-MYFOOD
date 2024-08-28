@@ -114,6 +114,26 @@ public class EmpresaManager {
         throw new IllegalArgumentException("Indice maior que o esperado");
     }
 
+    public String getAtributoEmpresa(int empresaId, String atributo) {
+        Empresa empresa = getEmpresa(empresaId);
+
+        if (empresa == null) {
+            throw new IllegalArgumentException("Empresa nao cadastrada");
+        }
+
+        if (atributo == null || atributo.trim().isEmpty()) {
+            throw new IllegalArgumentException("Atributo invalido");
+        }
+
+        return switch (atributo) {
+            case "nome" -> empresa.getNome();
+            case "endereco" -> empresa.getEndereco();
+            case "dono" -> empresa.getDono();
+            case "tipoCozinha" -> empresa.getTipoCozinha();
+            default -> throw new IllegalArgumentException("Atributo invalido");
+        };
+    }
+
     public Empresa getEmpresa(int empresaId) {
         return empresas.get(empresaId);
     }
@@ -135,7 +155,7 @@ public class EmpresaManager {
     public boolean isDonoEmpresa(int donoId, int empresaId) {
         Empresa empresa = empresas.get(empresaId);
         if (empresa == null) {
-            throw new IllegalArgumentException("Empresa não encontrada");
+            throw new IllegalArgumentException("Empresa nao cadastrada");
         }
         return empresa.getDonoId() == donoId;
     }

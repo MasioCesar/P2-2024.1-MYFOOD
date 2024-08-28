@@ -1,19 +1,19 @@
 package br.ufal.ic.p2.myfood.models;
 
-public class Usuario {
+public abstract class Usuario {
     private int id;
     private String nome;
     private String email;
     private String senha;
-    private String endereco;
 
-    public Usuario(int id, String nome, String email, String senha, String endereco) {
+    public Usuario(int id, String nome, String email, String senha) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.endereco = endereco;
     }
+
+    public abstract String getEndereco();
 
     public Usuario() {
 
@@ -49,14 +49,6 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-    public String getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
     }
 
 }
