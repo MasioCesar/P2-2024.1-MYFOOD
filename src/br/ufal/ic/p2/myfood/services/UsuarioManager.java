@@ -93,7 +93,9 @@ public class UsuarioManager {
             case "senha":
                 return usuario.getSenha();
             case "endereco":
-                return usuario.getEndereco();
+                if (usuario instanceof Cliente || usuario instanceof DonoRestaurante) {
+                    return usuario.getEndereco();
+                }
             case "cpf":
                 if (usuario instanceof DonoRestaurante) {
                     return ((DonoRestaurante) usuario).getCpf();
