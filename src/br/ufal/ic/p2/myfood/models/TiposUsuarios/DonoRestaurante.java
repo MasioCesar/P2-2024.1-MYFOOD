@@ -1,6 +1,6 @@
 package br.ufal.ic.p2.myfood.models.TiposUsuarios;
 
-import br.ufal.ic.p2.myfood.models.Usuario;
+import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 
 public class DonoRestaurante extends Usuario {
     private String cpf;
@@ -31,5 +31,10 @@ public class DonoRestaurante extends Usuario {
 
     public void setEndereco(String endereco) {
         this.endereco = endereco;
+    }
+
+    @Override
+    public boolean possuiCpf() {
+        return true; // DonoRestaurante possui CPF
     }
 }

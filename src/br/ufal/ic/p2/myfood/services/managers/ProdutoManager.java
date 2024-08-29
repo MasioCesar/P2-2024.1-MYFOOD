@@ -1,9 +1,9 @@
-package br.ufal.ic.p2.myfood.services;
+package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Produto.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLProduto;
-import br.ufal.ic.p2.myfood.models.Empresa;
-import br.ufal.ic.p2.myfood.models.Produto;
+import br.ufal.ic.p2.myfood.models.entidades.Empresa;
+import br.ufal.ic.p2.myfood.models.entidades.Produto;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.text.DecimalFormat;
@@ -13,12 +13,13 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ProdutoManager {
-    private Map<Integer, Map<Integer, Produto>> produtosPorEmpresa = new HashMap<>();
+    private Map<Integer, Map<Integer, Produto>> produtosPorEmpresa;
     private final EmpresaManager empresaManager;
     private int nextProductId = 0;
 
     public ProdutoManager(EmpresaManager empresaManager) {
         this.empresaManager = empresaManager;
+        this.produtosPorEmpresa = XMLProduto.load();
     }
 
     public void setProdutosPorEmpresa(Map<Integer, Map<Integer, Produto>> produtosPorEmpresa) {
@@ -41,7 +42,7 @@ public class ProdutoManager {
         Produto produto = new Produto(id, nome, valor, categoria, empresa.getNome());
         produtos.put(id, produto);
         produtosPorEmpresa.put(empresaId, produtos);
-        XMLProduto.saveProdutos(produtosPorEmpresa);
+
         return id;
     }
 
@@ -63,8 +64,6 @@ public class ProdutoManager {
         produto.setNome(nome);
         produto.setValor(valor);
         produto.setCategoria(categoria);
-
-        XMLProduto.saveProdutos(produtosPorEmpresa);
     }
 
     public String getProduto(String nome, int empresaId, String atributo) throws Exception {
@@ -133,5 +132,9 @@ public class ProdutoManager {
     public void zerarSistema() {
         produtosPorEmpresa.clear();
         nextProductId = 0;
+    }
+
+    public void salvarDados() {
+        XMLProduto.save(produtosPorEmpresa);
     }
 }

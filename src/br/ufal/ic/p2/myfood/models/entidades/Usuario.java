@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.models;
+package br.ufal.ic.p2.myfood.models.entidades;
 
 public abstract class Usuario {
     private int id;
@@ -50,6 +50,9 @@ public abstract class Usuario {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    public abstract boolean possuiCpf();
+
 
 }
 
