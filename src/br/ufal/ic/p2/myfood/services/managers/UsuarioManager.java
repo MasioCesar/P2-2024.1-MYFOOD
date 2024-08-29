@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.services;
+package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Usuario.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUser;
@@ -14,20 +14,11 @@ public class UsuarioManager {
     private Map<String, Usuario> users;
     private final Map<Integer, Usuario> usersById;
     private int nextUserId = 0;
-    private static final String CPF_DEFAULT = "DEFAULT";
 
     public UsuarioManager() {
-        this.users = XMLUser.loadUsuarios();
+        this.users = XMLUser.load();
         this.usersById = new HashMap<>();
 
-        for (Usuario usuario : users.values()) {
-            usersById.put(usuario.getId(), usuario);
-        }
-    }
-
-    public void setUsers(Map<String, Usuario> users) {
-        this.users = users;
-        this.usersById.clear();
         for (Usuario usuario : users.values()) {
             usersById.put(usuario.getId(), usuario);
         }
@@ -47,8 +38,6 @@ public class UsuarioManager {
 
         users.put(email, usuario);
         usersById.put(usuario.getId(), usuario);
-
-        XMLUser.saveUsuarios(users);
     }
 
     // CLIENTE
@@ -62,11 +51,7 @@ public class UsuarioManager {
 
         users.put(email, usuario);
         usersById.put(usuario.getId(), usuario);
-
-        XMLUser.saveUsuarios(users);
     }
-
-
 
     public int login(String email, String senha) throws Exception {
         Usuario usuario = users.get(email);
@@ -92,11 +77,9 @@ public class UsuarioManager {
             case "senha":
                 return usuario.getSenha();
             case "endereco":
-                if (usuario instanceof Cliente || usuario instanceof DonoRestaurante) {
-                    return usuario.getEndereco();
-                }
+                return usuario.getEndereco();
             case "cpf":
-                if (usuario instanceof DonoRestaurante) {
+                if (usuario.possuiCpf()) {
                     return ((DonoRestaurante) usuario).getCpf();
                 } else {
                     throw new UsuarioSemCPFException();
@@ -122,6 +105,11 @@ public class UsuarioManager {
         users.clear();
         usersById.clear();
         nextUserId = 0;
-        XMLUser.saveUsuarios(users);
+        XMLUser.save(users);
+    }
+
+    // Método para salvar os dados no XML ao encerrar o sistema
+    public void salvarDados() {
+        XMLUser.save(users);
     }
 }

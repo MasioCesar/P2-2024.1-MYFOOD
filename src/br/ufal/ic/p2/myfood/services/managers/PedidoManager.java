@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.services;
+package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Pedido.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLPedido;
@@ -22,12 +22,13 @@ public class PedidoManager {
         this.empresaManager = empresaManager;
         this.produtoManager = produtoManager;
         this.usuarioManager = usuarioManager;
+        this.pedidosPorCliente = XMLPedido.load();
     }
 
     public void zerarSistema() {
         pedidosPorCliente.clear();
         pedidoNumero = 0;
-        XMLPedido.savePedidos(pedidosPorCliente); // Persistir a limpeza do sistema
+        XMLPedido.save(pedidosPorCliente); // Persistir a limpeza do sistema
     }
 
     public void setPedidos(Map<Integer, Pedido> pedidosPorCliente) {
@@ -49,7 +50,6 @@ public class PedidoManager {
         Pedido pedido = new Pedido(numero, clienteId, empresaId, "aberto");
         pedidosPorCliente.put(numero, pedido);
 
-        XMLPedido.savePedidos(pedidosPorCliente);
         return numero;
     }
 
@@ -76,7 +76,6 @@ public class PedidoManager {
         }
 
         pedido.adicionarProduto(produto);
-        XMLPedido.savePedidos(pedidosPorCliente);
     }
 
     public String getPedidos(int pedidoId, String atributo) throws Exception {
@@ -131,7 +130,6 @@ public class PedidoManager {
         }
 
         pedido.setEstado("preparando");
-        XMLPedido.savePedidos(pedidosPorCliente);
     }
 
     public void removerProduto(int numero, String nomeProduto) throws Exception {
@@ -146,8 +144,6 @@ public class PedidoManager {
         }
 
         pedido.removerProduto(nomeProduto);
-
-        XMLPedido.savePedidos(pedidosPorCliente);
     }
 
     public int getNumeroPedido(int cliente, int empresa, int indice) throws Exception {
@@ -162,11 +158,11 @@ public class PedidoManager {
         }
     }
 
-    public void encerrarSistema() {
-        XMLPedido.savePedidos(pedidosPorCliente);
-    }
-
     private Produto getProdutoPorId(int produtoId) {
         return produtoManager.getProdutoPorId(produtoId);
+    }
+
+    public void salvarDados() {
+        XMLPedido.save(pedidosPorCliente);
     }
 }

@@ -32,4 +32,9 @@ public class DonoRestaurante extends Usuario {
     public void setEndereco(String endereco) {
         this.endereco = endereco;
     }
+
+    @Override
+    public boolean possuiCpf() {
+        return true; // DonoRestaurante possui CPF
+    }
 }

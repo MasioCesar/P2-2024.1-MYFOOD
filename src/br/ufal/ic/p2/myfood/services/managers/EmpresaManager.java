@@ -1,4 +1,4 @@
-package br.ufal.ic.p2.myfood.services;
+package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Empresa.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
@@ -16,6 +16,7 @@ public class EmpresaManager {
 
     public EmpresaManager(UsuarioManager usuarioManager) {
         this.usuarioManager = usuarioManager;
+        this.empresas = XMLEmpresa.load();
     }
 
     public int criarEmpresa(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
@@ -30,7 +31,7 @@ public class EmpresaManager {
             }
         }
 
-        if (!(usuario instanceof DonoRestaurante)) {
+        if (!(usuario.possuiCpf())) {
             throw new UsuarioNaoPodeCriarEmpresaException();
         }
 
@@ -39,7 +40,6 @@ public class EmpresaManager {
         int empresaId = nextEmpresaId++;
         Empresa empresa = new Empresa(empresaId, nome, endereco, tipoCozinha, dono.getId(), dono.getNome(), tipoEmpresa);
         empresas.put(empresaId, empresa);
-        XMLEmpresa.saveEmpresas(empresas);
 
         return empresaId;
     }
@@ -47,7 +47,7 @@ public class EmpresaManager {
     public String getEmpresasDoUsuario(int idDono) throws Exception {
         Usuario usuario = usuarioManager.getUser(idDono);
 
-        if (!(usuario instanceof DonoRestaurante dono)) {
+        if (!(usuario.possuiCpf())) {
             throw new UsuarioNaoPodeCriarEmpresaException();
         }
 
@@ -58,7 +58,7 @@ public class EmpresaManager {
         boolean primeiro = true;
 
         for (Empresa empresa : empresas.values()) {
-            if (empresa.getDonoId() == dono.getId()) {
+            if (empresa.getDonoId() == usuario.getId()) {
                 if (!primeiro) {
                     sb.append(", ");
                 }
@@ -150,7 +150,7 @@ public class EmpresaManager {
     public void zerarSistema() {
         nextEmpresaId = 0;
         empresas.clear();
-        XMLEmpresa.saveEmpresas(empresas);
+        XMLEmpresa.save(empresas);
     }
 
     public boolean isDonoEmpresa(int donoId, int empresaId) throws Exception {
@@ -159,6 +159,10 @@ public class EmpresaManager {
             throw new EmpresaNaoCadastradaException();
         }
         return empresa.getDonoId() == donoId;
+    }
+
+    public void salvarDados() {
+        XMLEmpresa.save(empresas);
     }
 
 }

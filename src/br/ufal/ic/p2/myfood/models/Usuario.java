@@ -51,6 +51,9 @@ public abstract class Usuario {
         this.senha = senha;
     }
 
+    public abstract boolean possuiCpf();
+
+
 }
 
 
