@@ -1,6 +1,6 @@
 package br.ufal.ic.p2.myfood.services.XMLFunctions;
 
-import br.ufal.ic.p2.myfood.models.Pedido;
+import br.ufal.ic.p2.myfood.models.entidades.Pedido;
 import br.ufal.ic.p2.myfood.services.DBManager;
 
 import java.util.Map;

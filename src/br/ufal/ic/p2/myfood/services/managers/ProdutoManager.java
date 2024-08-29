@@ -2,8 +2,8 @@ package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Produto.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLProduto;
-import br.ufal.ic.p2.myfood.models.Empresa;
-import br.ufal.ic.p2.myfood.models.Produto;
+import br.ufal.ic.p2.myfood.models.entidades.Empresa;
+import br.ufal.ic.p2.myfood.models.entidades.Produto;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.text.DecimalFormat;

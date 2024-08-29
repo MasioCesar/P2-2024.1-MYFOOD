@@ -3,8 +3,8 @@ package br.ufal.ic.p2.myfood.services.managers;
 import br.ufal.ic.p2.myfood.exceptions.Empresa.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
-import br.ufal.ic.p2.myfood.models.Empresa;
-import br.ufal.ic.p2.myfood.models.Usuario;
+import br.ufal.ic.p2.myfood.models.entidades.Empresa;
+import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 
 import java.util.HashMap;
 import java.util.Map;

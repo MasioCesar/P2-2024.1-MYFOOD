@@ -2,10 +2,10 @@ package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Pedido.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLPedido;
-import br.ufal.ic.p2.myfood.models.Empresa;
-import br.ufal.ic.p2.myfood.models.Pedido;
-import br.ufal.ic.p2.myfood.models.Produto;
-import br.ufal.ic.p2.myfood.models.Usuario;
+import br.ufal.ic.p2.myfood.models.entidades.Empresa;
+import br.ufal.ic.p2.myfood.models.entidades.Pedido;
+import br.ufal.ic.p2.myfood.models.entidades.Produto;
+import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 
 import java.util.*;
 import java.util.stream.Collectors;

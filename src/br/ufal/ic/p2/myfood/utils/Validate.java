@@ -7,7 +7,7 @@ import br.ufal.ic.p2.myfood.exceptions.Usuario.EmailInvalidoException;
 import br.ufal.ic.p2.myfood.exceptions.Usuario.EmailJaExisteException;
 import br.ufal.ic.p2.myfood.exceptions.Usuario.EnderecoInvalidoException;
 import br.ufal.ic.p2.myfood.exceptions.Usuario.SenhaInvalidaException;
-import br.ufal.ic.p2.myfood.models.Usuario;
+import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 
 import java.util.Map;
 

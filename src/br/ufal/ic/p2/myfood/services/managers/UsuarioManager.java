@@ -1,10 +1,10 @@
 package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Usuario.*;
-import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUser;
+import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUsuario;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
-import br.ufal.ic.p2.myfood.models.Usuario;
+import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public class UsuarioManager {
     private int nextUserId = 0;
 
     public UsuarioManager() {
-        this.users = XMLUser.load();
+        this.users = XMLUsuario.load();
         this.usersById = new HashMap<>();
 
         for (Usuario usuario : users.values()) {
@@ -105,11 +105,11 @@ public class UsuarioManager {
         users.clear();
         usersById.clear();
         nextUserId = 0;
-        XMLUser.save(users);
+        XMLUsuario.save(users);
     }
 
     // Método para salvar os dados no XML ao encerrar o sistema
     public void salvarDados() {
-        XMLUser.save(users);
+        XMLUsuario.save(users);
     }
 }
