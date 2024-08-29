@@ -6,11 +6,11 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DBManager {
+public class DataPersistenceManager {
 
     private final String fileName;
 
-    public DBManager(String fileName) {
+    public DataPersistenceManager(String fileName) {
         this.fileName = fileName;
     }
 
