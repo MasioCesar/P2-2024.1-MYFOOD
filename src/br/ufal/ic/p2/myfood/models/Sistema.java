@@ -28,19 +28,6 @@ public class Sistema {
         empresaManager.zerarSistema();
         produtoManager.zerarSistema();
         pedidosManager.zerarSistema();
-
-        clearDataFile("users.xml");
-        clearDataFile("empresas.xml");
-        clearDataFile("produtos.xml");
-        clearDataFile("pedidos.xml");
-    }
-
-    // Limpar arquivos de dados
-    private void clearDataFile(String fileName) {
-        File file = new File(fileName);
-        if (file.exists()) {
-            file.delete();
-        }
     }
 
     public UsuarioManager getUsuarioManager() {

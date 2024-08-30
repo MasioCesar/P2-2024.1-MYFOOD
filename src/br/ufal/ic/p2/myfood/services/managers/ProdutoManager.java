@@ -132,6 +132,7 @@ public class ProdutoManager {
     public void zerarSistema() {
         produtosPorEmpresa.clear();
         nextProductId = 0;
+        XMLProduto.save(produtosPorEmpresa);
     }
 
     public void salvarDados() {
