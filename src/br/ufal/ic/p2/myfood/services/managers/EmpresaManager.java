@@ -164,5 +164,4 @@ public class EmpresaManager {
     public void salvarDados() {
         XMLEmpresa.save(empresas);
     }
-
 }

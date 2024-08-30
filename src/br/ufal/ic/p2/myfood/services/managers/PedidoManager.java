@@ -11,7 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PedidoManager {
-    private Map<Integer, Pedido> pedidosPorCliente = new HashMap<>();
+    private Map<Integer, Pedido> pedidosPorCliente;
     private final UsuarioManager usuarioManager;
     private final EmpresaManager empresaManager;
     private final ProdutoManager produtoManager;
