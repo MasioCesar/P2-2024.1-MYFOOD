@@ -91,7 +91,7 @@ public class EmpresaManager {
         // Verifica se o usuário é um DonoRestaurante
         Usuario usuario = usuarioManager.getUser(idDono);
 
-        if (!(usuario instanceof DonoRestaurante dono)) {
+        if (!usuario.possuiCpf()) {
             throw new UsuarioNaoEDonoException();
         }
 
@@ -99,7 +99,7 @@ public class EmpresaManager {
         boolean empresaEncontrada = false;
         for (Empresa empresa : getEmpresas().values()) {
 
-            if (empresa.getNome().equals(nome) && empresa.getDonoId() == dono.getId()) {
+            if (empresa.getNome().equals(nome) && empresa.getDonoId() == usuario.getId()) {
                 empresaEncontrada = true;
                 if (count == indiceInt) {
                     return empresa.getId();
