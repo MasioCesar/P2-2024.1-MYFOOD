@@ -2,6 +2,8 @@ package br.ufal.ic.p2.myfood;
 
 import br.ufal.ic.p2.myfood.models.Sistema;
 
+import java.util.Objects;
+
 public class Facade {
     private Sistema sistema;
 
@@ -85,17 +87,18 @@ public class Facade {
     }
 
     // SEÇÃO EMPRESAS
-    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) throws Exception {
-        return sistema.getEmpresaManager().criarRestaurante(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
+    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String parametroAdicional) throws Exception {
+        return sistema.getEmpresaManager().criarEmpresa(nome, donoId, endereco, parametroAdicional, tipoEmpresa);
     }
 
     public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
         return sistema.getEmpresaManager().criarMercado(tipoEmpresa, donoId, nome, endereco, abre, fecha, tipoMercado);
     }
 
+    /*
     public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, boolean aberto24Horas) throws Exception {
         return sistema.getEmpresaManager().criarFarmacia(nome, donoId, endereco, aberto24Horas, tipoEmpresa);
-    }
+    }*/
 
     public String getEmpresasDoUsuario(int idDono) throws Exception {
         return sistema.getEmpresaManager().getEmpresasDoUsuario(idDono);

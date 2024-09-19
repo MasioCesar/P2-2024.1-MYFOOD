@@ -14,19 +14,29 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EmpresaManager {
+    // Instância única da classe EmpresaManager
+    private static EmpresaManager instance;
+
     private Map<Integer, Empresa> empresas;
     private final UsuarioManager usuarioManager;
     private int nextEmpresaId = 0;
 
-    public EmpresaManager(UsuarioManager usuarioManager) {
+    // Construtor privado para evitar instanciação externa
+    private EmpresaManager(UsuarioManager usuarioManager) {
         this.usuarioManager = usuarioManager;
         this.empresas = XMLEmpresa.load();
     }
 
-    // RESTAURANTE
-    public int criarRestaurante(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
-        Usuario usuario = usuarioManager.getUser(donoId);
+    // Método público e estático para retornar a única instância
+    public static EmpresaManager getInstance(UsuarioManager usuarioManager) {
+        if (instance == null) {
+            // Cria a instância apenas se ela ainda não foi criada
+            instance = new EmpresaManager(usuarioManager);
+        }
+        return instance;
+    }
 
+    public int criarEmpresa(String nome, int donoId, String endereco, String parametroAdicional, String tipoEmpresa) throws Exception {
         if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
             throw new TipoEmpresaInvalidoException();
         }
@@ -38,6 +48,21 @@ public class EmpresaManager {
         if (endereco == null || endereco.trim().isEmpty()) {
             throw new EnderecoInvalidoException();
         }
+
+        if (tipoEmpresa.equals("restaurante")) {
+            return criarRestaurante(nome, donoId, endereco, parametroAdicional, tipoEmpresa);
+        }
+        else if (tipoEmpresa.equals("farmacia")) {
+            return criarFarmacia(nome, donoId, endereco, Boolean.parseBoolean(parametroAdicional), tipoEmpresa);
+        }
+        else {
+            throw new TipoEmpresaInvalidoException();
+        }
+    }
+
+    // RESTAURANTE
+    public int criarRestaurante(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
+        Usuario usuario = usuarioManager.getUser(donoId);
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
@@ -129,18 +154,6 @@ public class EmpresaManager {
 
     public int criarFarmacia(String nome, int donoId, String endereco, boolean aberto24Horas, String tipoEmpresa) throws Exception {
         Usuario usuario = usuarioManager.getUser(donoId);
-
-        if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
-            throw new TipoEmpresaInvalidoException();
-        }
-
-        if (nome == null || nome.trim().isEmpty()) {
-            throw new NomeInvalidoException();
-        }
-
-        if (endereco == null || endereco.trim().isEmpty()) {
-            throw new EnderecoInvalidoException();
-        }
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {

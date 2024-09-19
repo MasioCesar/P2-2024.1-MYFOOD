@@ -13,6 +13,9 @@ import java.util.Locale;
 import java.util.Map;
 
 public class ProdutoManager {
+    // Instância única da classe ProdutoManager
+    private static ProdutoManager instance;
+
     private Map<Integer, Map<Integer, Produto>> produtosPorEmpresa;
     private final EmpresaManager empresaManager;
     private int nextProductId = 0;
@@ -20,6 +23,14 @@ public class ProdutoManager {
     public ProdutoManager(EmpresaManager empresaManager) {
         this.empresaManager = empresaManager;
         this.produtosPorEmpresa = XMLProduto.load();
+    }
+
+    public static ProdutoManager getInstance(EmpresaManager empresaManager) {
+        if (instance == null) {
+            // Cria a instância apenas se ela ainda não foi criada
+            instance = new ProdutoManager(empresaManager);
+        }
+        return instance;
     }
 
     public void setProdutosPorEmpresa(Map<Integer, Map<Integer, Produto>> produtosPorEmpresa) {

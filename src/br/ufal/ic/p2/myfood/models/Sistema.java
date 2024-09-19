@@ -15,11 +15,14 @@ public class Sistema {
     private PedidoManager pedidosManager;
 
     public Sistema() {
-        this.usuarioManager = new UsuarioManager();
-        this.empresaManager = new EmpresaManager(usuarioManager);
-        this.produtoManager = new ProdutoManager(empresaManager);
-        this.pedidosManager = new PedidoManager(empresaManager, produtoManager, usuarioManager);
-
+        // Inicializar a única instância do UsuarioManager usando o Singleton
+        this.usuarioManager = UsuarioManager.getInstance();
+        // Inicializar a única instância do EmpresaManager usando o Singleton
+        this.empresaManager = EmpresaManager.getInstance(usuarioManager);
+        // Inicializar a única instância do ProdutoManager usando o Singleton
+        this.produtoManager = ProdutoManager.getInstance(empresaManager);
+        // Inicializar a única instância do PedidoManager usando o Singleton
+        this.pedidosManager = PedidoManager.getInstance(empresaManager, produtoManager, usuarioManager);
     }
 
     // Zerar o sistema

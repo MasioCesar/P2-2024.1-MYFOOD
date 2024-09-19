@@ -11,6 +11,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PedidoManager {
+    // Instância única da classe ProdutoManager
+    private static PedidoManager instance;
+
     private Map<Integer, Pedido> pedidosPorCliente;
     private final UsuarioManager usuarioManager;
     private final EmpresaManager empresaManager;
@@ -23,6 +26,13 @@ public class PedidoManager {
         this.produtoManager = produtoManager;
         this.usuarioManager = usuarioManager;
         this.pedidosPorCliente = XMLPedido.load();
+    }
+
+    public static PedidoManager getInstance(EmpresaManager empresaManager, ProdutoManager produtoManager, UsuarioManager usuarioManager) {
+        if (instance == null) {
+            instance = new PedidoManager(empresaManager, produtoManager, usuarioManager);
+        }
+        return instance;
     }
 
     public void zerarSistema() {

@@ -3,7 +3,7 @@ import easyaccept.EasyAccept;
 public class Main {
     public static void main(String[] args) {
         String facade = "br.ufal.ic.p2.myfood.Facade";
-        /*
+
         EasyAccept.main(new String[]{facade, "tests/us1_1.txt"});
         EasyAccept.main(new String[]{facade, "tests/us1_2.txt"});
         EasyAccept.main(new String[]{facade, "tests/us2_1.txt"});
@@ -15,8 +15,7 @@ public class Main {
 
         EasyAccept.main(new String[]{facade, "tests/us5_1.txt"});
         EasyAccept.main(new String[]{facade, "tests/us5_2.txt"});
-        */
-
         EasyAccept.main(new String[]{facade, "tests/us6_1.txt"});
+
     }
 }

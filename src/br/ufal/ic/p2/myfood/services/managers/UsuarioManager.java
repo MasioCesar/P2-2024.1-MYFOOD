@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UsuarioManager {
+    // Instância única da classe UsuarioManager
+    private static UsuarioManager instance;
+
     private Map<String, Usuario> users;
     private final Map<Integer, Usuario> usersById;
     private int nextUserId = 0;
@@ -22,6 +25,13 @@ public class UsuarioManager {
         for (Usuario usuario : users.values()) {
             usersById.put(usuario.getId(), usuario);
         }
+    }
+
+    public static UsuarioManager getInstance() {
+        if (instance == null) {
+            instance = new UsuarioManager();
+        }
+        return instance;
     }
 
     // DONO RESTAURANTE
