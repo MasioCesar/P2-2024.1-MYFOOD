@@ -31,15 +31,12 @@ public class PedidoManager {
         XMLPedido.save(pedidosPorCliente); // Persistir a limpeza do sistema
     }
 
-    public void setPedidos(Map<Integer, Pedido> pedidosPorCliente) {
-        this.pedidosPorCliente = pedidosPorCliente;
-    }
-
     public int criarPedido(int clienteId, int empresaId) throws Exception {
         if (empresaManager.isDonoEmpresa(clienteId, empresaId)) {
             throw new DonoEmpresaNaoPodeFazerPedidoException();
         }
 
+        // Verifica se já existe um pedido aberto para o cliente na mesma empresa
         for (Pedido pedido : pedidosPorCliente.values()) {
             if (pedido.getCliente() == clienteId && pedido.getEmpresa() == empresaId && pedido.getEstado().equals("aberto")) {
                 throw new PedidoEmAbertoException();
@@ -52,6 +49,7 @@ public class PedidoManager {
 
         return numero;
     }
+
 
     public void adicionarProduto(int numeroPedido, int produtoId) throws Exception {
         Pedido pedido = pedidosPorCliente.get(numeroPedido);
@@ -157,6 +155,7 @@ public class PedidoManager {
             throw new IndicePedidoInvalidoException();
         }
     }
+
 
     private Produto getProdutoPorId(int produtoId) {
         return produtoManager.getProdutoPorId(produtoId);

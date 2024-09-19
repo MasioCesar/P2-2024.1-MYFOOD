@@ -32,9 +32,69 @@ public class Facade {
         return sistema.getUsuarioManager().login(email, senha);
     }
 
+    public class RestauranteParams {
+        public String tipoEmpresa;
+        public int donoId;
+        public String nome;
+        public String endereco;
+        public String tipoCozinha;
+
+        public RestauranteParams(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) {
+            this.tipoEmpresa = tipoEmpresa;
+            this.donoId = donoId;
+            this.nome = nome;
+            this.endereco = endereco;
+            this.tipoCozinha = tipoCozinha;
+        }
+    }
+
+    public class MercadoParams {
+        public String tipoEmpresa;
+        public int donoId;
+        public String nome;
+        public String endereco;
+        public String abre;
+        public String fecha;
+        public String tipoMercado;
+
+        public MercadoParams(String tipoEmpresa, int donoId, String nome, String endereco, String abre, String fecha, String tipoMercado) {
+            this.tipoEmpresa = tipoEmpresa;
+            this.donoId = donoId;
+            this.nome = nome;
+            this.endereco = endereco;
+            this.abre = abre;
+            this.fecha = fecha;
+            this.tipoMercado = tipoMercado;
+        }
+    }
+
+    public class FarmaciaParams {
+        public String tipoEmpresa;
+        public int donoId;
+        public String nome;
+        public String endereco;
+        public boolean aberto24Horas;
+
+        public FarmaciaParams(String tipoEmpresa, int donoId, String nome, String endereco, boolean aberto24Horas) {
+            this.tipoEmpresa = tipoEmpresa;
+            this.donoId = donoId;
+            this.nome = nome;
+            this.endereco = endereco;
+            this.aberto24Horas = aberto24Horas;
+        }
+    }
+
     // SEÇÃO EMPRESAS
     public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) throws Exception {
-        return sistema.getEmpresaManager().criarEmpresa(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
+        return sistema.getEmpresaManager().criarRestaurante(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
+    }
+
+    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
+        return sistema.getEmpresaManager().criarMercado(tipoEmpresa, donoId, nome, endereco, abre, fecha, tipoMercado);
+    }
+
+    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, boolean aberto24Horas) throws Exception {
+        return sistema.getEmpresaManager().criarFarmacia(nome, donoId, endereco, aberto24Horas, tipoEmpresa);
     }
 
     public String getEmpresasDoUsuario(int idDono) throws Exception {
@@ -47,6 +107,10 @@ public class Facade {
 
     public String getAtributoEmpresa(int empresaId, String atributo) throws Exception {
         return sistema.getEmpresaManager().getAtributoEmpresa(empresaId, atributo);
+    }
+
+    public void alterarFuncionamento(int mercado, String abre, String fecha) throws Exception {
+        sistema.getEmpresaManager().alterarFuncionamento(mercado, abre, fecha);
     }
 
     // SEÇÃO PRODUTOS

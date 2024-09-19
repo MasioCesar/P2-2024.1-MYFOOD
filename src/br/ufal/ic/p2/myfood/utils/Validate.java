@@ -9,6 +9,8 @@ import br.ufal.ic.p2.myfood.exceptions.Usuario.EnderecoInvalidoException;
 import br.ufal.ic.p2.myfood.exceptions.Usuario.SenhaInvalidaException;
 import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 public class Validate {
@@ -49,4 +51,22 @@ public class Validate {
         String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
         return email.matches(emailRegex);
     }
+
+    // EMPRESA
+    public static boolean isHoraValida(String hora) {
+        return hora.matches("\\d{2}:\\d{2}");
+    }
+
+    public static boolean horariosInvalidos(String abre, String fecha) {
+        try {
+            LocalTime horarioAbertura = LocalTime.parse(abre);
+            LocalTime horarioFechamento = LocalTime.parse(fecha);
+
+            return horarioAbertura.isAfter(horarioFechamento);
+        } catch (DateTimeParseException e) {
+            return true;
+        }
+    }
+
+
 }

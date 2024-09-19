@@ -1,28 +1,26 @@
 package br.ufal.ic.p2.myfood.models.entidades;
 
-public class Empresa {
+public abstract class Empresa {
     private int id;
     private String nome;
     private String endereco;
-    private String tipoCozinha;
     private String tipoEmpresa;
     private int donoId;
     private String dono;
 
-    public Empresa(int id, String nome, String endereco, String tipoCozinha, int donoId, String dono, String tipoEmpresa) {
+    public Empresa(int id, String nome, String endereco, int donoId, String dono, String tipoEmpresa) {
         this.id = id;
         this.nome = nome;
         this.endereco = endereco;
-        this.tipoCozinha = tipoCozinha;
         this.tipoEmpresa = tipoEmpresa;
         this.donoId = donoId;
         this.dono = dono;
     }
 
     public Empresa() {
-
     }
 
+    // Métodos Getters e Setters
     public int getId() {
         return id;
     }
@@ -47,20 +45,12 @@ public class Empresa {
         this.endereco = endereco;
     }
 
-    public String getTipoCozinha() {
-        return tipoCozinha;
-    }
-
     public String getTipoEmpresa() {
         return tipoEmpresa;
     }
 
     public void setTipoEmpresa(String tipoEmpresa) {
         this.tipoEmpresa = tipoEmpresa;
-    }
-
-    public void setTipoCozinha(String tipoCozinha) {
-        this.tipoCozinha = tipoCozinha;
     }
 
     public int getDonoId() {
@@ -79,4 +69,9 @@ public class Empresa {
         this.dono = dono;
     }
 
+    public abstract boolean isRestaurante();
+
+    public abstract boolean isMercado();
+
+    public abstract boolean isFarmacia();
 }

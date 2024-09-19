@@ -3,7 +3,7 @@ package br.ufal.ic.p2.myfood.services.managers;
 import br.ufal.ic.p2.myfood.exceptions.Usuario.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUsuario;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
-import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoEmpresa;
 import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
@@ -34,7 +34,7 @@ public class UsuarioManager {
         Usuario usuario;
         int id = nextUserId++;
 
-        usuario = new DonoRestaurante(id, nome, email, senha, endereco, cpf);
+        usuario = new DonoEmpresa(id, nome, email, senha, endereco, cpf);
 
         users.put(email, usuario);
         usersById.put(usuario.getId(), usuario);
@@ -80,7 +80,7 @@ public class UsuarioManager {
                 return usuario.getEndereco();
             case "cpf":
                 if (usuario.possuiCpf()) {
-                    return ((DonoRestaurante) usuario).getCpf();
+                    return ((DonoEmpresa) usuario).getCpf();
                 } else {
                     throw new UsuarioSemCPFException();
                 }
@@ -90,11 +90,12 @@ public class UsuarioManager {
     }
 
     public Usuario getUser(int userId) throws Exception {
-        Usuario usuario = usersById.get(userId); // Use o mapa de IDs
-        if (usuario == null) {
-            throw new UsuarioNaoEncontradoException();
+        for (Usuario usuario : users.values()) {
+            if (usuario.getId() == userId) {
+                return usuario;
+            }
         }
-        return usuario;
+        throw new UsuarioNaoEncontradoException();
     }
 
     private Usuario findUserById(int id) {

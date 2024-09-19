@@ -1,16 +1,20 @@
 package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Empresa.*;
+import br.ufal.ic.p2.myfood.models.TiposEmpresas.Farmacia;
+import br.ufal.ic.p2.myfood.models.TiposEmpresas.Mercado;
+import br.ufal.ic.p2.myfood.models.TiposEmpresas.Restaurante;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
-import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoRestaurante;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoEmpresa;
 import br.ufal.ic.p2.myfood.models.entidades.Empresa;
 import br.ufal.ic.p2.myfood.models.entidades.Usuario;
+import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class EmpresaManager {
-    private Map<Integer, Empresa> empresas = new HashMap<>();
+    private Map<Integer, Empresa> empresas;
     private final UsuarioManager usuarioManager;
     private int nextEmpresaId = 0;
 
@@ -19,8 +23,21 @@ public class EmpresaManager {
         this.empresas = XMLEmpresa.load();
     }
 
-    public int criarEmpresa(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
+    // RESTAURANTE
+    public int criarRestaurante(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
         Usuario usuario = usuarioManager.getUser(donoId);
+
+        if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
+            throw new TipoEmpresaInvalidoException();
+        }
+
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new NomeInvalidoException();
+        }
+
+        if (endereco == null || endereco.trim().isEmpty()) {
+            throw new EnderecoInvalidoException();
+        }
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
@@ -35,10 +52,113 @@ public class EmpresaManager {
             throw new UsuarioNaoPodeCriarEmpresaException();
         }
 
-        DonoRestaurante dono = (DonoRestaurante) usuario;
+        DonoEmpresa dono = (DonoEmpresa) usuario;
 
         int empresaId = nextEmpresaId++;
-        Empresa empresa = new Empresa(empresaId, nome, endereco, tipoCozinha, dono.getId(), dono.getNome(), tipoEmpresa);
+        Empresa empresa = new Restaurante(empresaId, nome, endereco, dono.getId(), dono.getNome(), tipoEmpresa, tipoCozinha);
+        empresas.put(empresaId, empresa);
+
+        return empresaId;
+    }
+
+    // MERCADO
+    public int criarMercado(String tipoEmpresa, int donoId, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
+        Usuario usuario = usuarioManager.getUser(donoId);
+
+        if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
+            throw new TipoEmpresaInvalidoException();
+        }
+
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new NomeInvalidoException();
+        }
+
+        if (endereco == null || endereco.trim().isEmpty()) {
+            throw new EnderecoInvalidoException();
+        }
+
+        if (tipoMercado == null || tipoMercado.trim().isEmpty()) {
+            throw new TipoMercadoInvalidoException();
+        }
+
+        if (!(usuario.possuiCpf())) {
+            throw new UsuarioNaoPodeCriarEmpresaException();
+        }
+
+        if (abre == null) {
+            throw new HorarioInvalidoException();
+        }
+
+        if (abre.trim().isEmpty()) {
+            throw new FormatoHoraInvalidoException();
+        }
+
+        if (fecha == null) {
+            throw new HorarioInvalidoException();
+        }
+
+        if (fecha.trim().isEmpty()) {
+            throw new FormatoHoraInvalidoException();
+        }
+
+        if (!Validate.isHoraValida(abre) || !Validate.isHoraValida(fecha)) {
+            throw new FormatoHoraInvalidoException();
+        }
+
+        if (Validate.horariosInvalidos(abre, fecha)) {
+            throw new HorariosInvalidosException();
+        }
+
+        for (Empresa empresaExistente : empresas.values()) {
+            if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
+                throw new EmpresaJaExisteException();
+            }
+            if (empresaExistente.getNome().equals(nome) && empresaExistente.getEndereco().equals(endereco)) {
+                throw new ProibidoCadastrarDuasEmpresasException();
+            }
+        }
+
+        DonoEmpresa dono = (DonoEmpresa) usuario;
+
+        int empresaId = nextEmpresaId++;
+        Empresa empresa = new Mercado(empresaId, nome, endereco, abre, fecha, tipoMercado, dono.getId(), dono.getNome(), tipoEmpresa);
+        empresas.put(empresaId, empresa);
+
+        return empresaId;
+    }
+
+    public int criarFarmacia(String nome, int donoId, String endereco, boolean aberto24Horas, String tipoEmpresa) throws Exception {
+        Usuario usuario = usuarioManager.getUser(donoId);
+
+        if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
+            throw new TipoEmpresaInvalidoException();
+        }
+
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new NomeInvalidoException();
+        }
+
+        if (endereco == null || endereco.trim().isEmpty()) {
+            throw new EnderecoInvalidoException();
+        }
+
+        for (Empresa empresaExistente : empresas.values()) {
+            if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
+                throw new EmpresaJaExisteException();
+            }
+            if (empresaExistente.getNome().equals(nome) && empresaExistente.getEndereco().equals(endereco)) {
+                throw new ProibidoCadastrarDuasEmpresasException();
+            }
+        }
+
+        if (!(usuario.possuiCpf())) {
+            throw new UsuarioNaoPodeCriarEmpresaException();
+        }
+
+        DonoEmpresa dono = (DonoEmpresa) usuario;
+
+        int empresaId = nextEmpresaId++;
+        Empresa empresa = new Farmacia(empresaId, nome, endereco, dono.getId(), dono.getNome(), tipoEmpresa, aberto24Horas);
         empresas.put(empresaId, empresa);
 
         return empresaId;
@@ -88,7 +208,7 @@ public class EmpresaManager {
             throw new IndiceInvalidoException();
         }
 
-        // Verifica se o usuário é um DonoRestaurante
+        // Verifica se o usuário é um DonoEmpresa
         Usuario usuario = usuarioManager.getUser(idDono);
 
         if (!usuario.possuiCpf()) {
@@ -98,7 +218,6 @@ public class EmpresaManager {
         int count = 0;
         boolean empresaEncontrada = false;
         for (Empresa empresa : getEmpresas().values()) {
-
             if (empresa.getNome().equals(nome) && empresa.getDonoId() == usuario.getId()) {
                 empresaEncontrada = true;
                 if (count == indiceInt) {
@@ -107,6 +226,7 @@ public class EmpresaManager {
                 count++;
             }
         }
+
 
         if (!empresaEncontrada) {
             throw new NaoExisteEmpresaComEsseNomeException();
@@ -126,14 +246,73 @@ public class EmpresaManager {
             throw new AtributoInvalidoException();
         }
 
-        return switch (atributo) {
-            case "nome" -> empresa.getNome();
-            case "endereco" -> empresa.getEndereco();
-            case "dono" -> empresa.getDono();
-            case "tipoCozinha" -> empresa.getTipoCozinha();
-            default -> throw new AtributoInvalidoException();
-        };
+        switch (atributo) {
+            case "nome":
+                return empresa.getNome();
+            case "endereco":
+                return empresa.getEndereco();
+            case "dono":
+                return empresa.getDono();
+            case "tipoCozinha":
+                if (empresa.isRestaurante()) {
+                    return ((Restaurante) empresa).getTipoCozinha();
+                } else {
+                    throw new AtributoInvalidoException();
+                }
+            case "abre":
+                if (empresa.isMercado()) {
+                    return ((Mercado) empresa).getHorarioAbertura();
+                } else {
+                    throw new AtributoInvalidoException();
+                }
+            case "fecha":
+                if (empresa.isMercado()) {
+                    return ((Mercado) empresa).getHorarioFechamento();
+                } else {
+                    throw new AtributoInvalidoException();
+                }
+            case "tipoMercado":
+                if (empresa.isMercado()) {
+                    return ((Mercado) empresa).getTipoMercado();
+                } else {
+                    throw new AtributoInvalidoException();
+                }
+            case "aberto24Horas":
+                if (empresa.isFarmacia()) {
+                    Boolean aberto24Horas = ((Farmacia) empresa).getAberto24Horas();
+                    return aberto24Horas != null ? aberto24Horas.toString() : "null"; // Verificar se é nulo e converter para String
+                } else {
+                    throw new AtributoInvalidoException();
+                }
+            default:
+                throw new AtributoInvalidoException();
+        }
     }
+
+    public void alterarFuncionamento(int mercado, String abre, String fecha) throws Exception {
+        if (abre == null || abre.trim().isEmpty() || fecha == null || fecha.trim().isEmpty()) {
+            throw new HorariosInvalidosException();
+        }
+
+        if (!Validate.isHoraValida(abre) || !Validate.isHoraValida(fecha)) {
+            throw new FormatoHoraInvalidoException();
+        }
+
+        if (Validate.horariosInvalidos(abre, fecha)) {
+            throw new HorariosInvalidosException();
+        }
+
+        Empresa empresa = getEmpresa(mercado);
+
+        if (!empresa.isMercado()) {
+            throw new NaoEMercadoValidoException();
+        }
+
+        Mercado mercadoAtual = (Mercado) empresa;
+        mercadoAtual.setHorarioAbertura(abre);
+        mercadoAtual.setHorarioFechamento(fecha);
+    }
+
 
     public Empresa getEmpresa(int empresaId) {
         return empresas.get(empresaId);
@@ -141,10 +320,6 @@ public class EmpresaManager {
 
     public Map<Integer, Empresa> getEmpresas() {
         return empresas;
-    }
-
-    public void setEmpresas(Map<Integer, Empresa> empresas) {
-        this.empresas = empresas;
     }
 
     public void zerarSistema() {
@@ -164,4 +339,5 @@ public class EmpresaManager {
     public void salvarDados() {
         XMLEmpresa.save(empresas);
     }
+
 }
