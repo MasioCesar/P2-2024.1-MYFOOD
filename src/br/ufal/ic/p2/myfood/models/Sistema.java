@@ -1,13 +1,15 @@
 package br.ufal.ic.p2.myfood.models;
 
+import br.ufal.ic.p2.myfood.models.entidades.Empresa;
+import br.ufal.ic.p2.myfood.models.entidades.Produto;
+import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 import br.ufal.ic.p2.myfood.services.managers.EmpresaManager;
 import br.ufal.ic.p2.myfood.services.managers.PedidoManager;
 import br.ufal.ic.p2.myfood.services.managers.ProdutoManager;
 import br.ufal.ic.p2.myfood.services.managers.UsuarioManager;
+import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 
-import java.io.File;
-
-public class Sistema {
+public class Sistema implements Mediator {
 
     private UsuarioManager usuarioManager;
     private EmpresaManager empresaManager;
@@ -16,13 +18,33 @@ public class Sistema {
 
     public Sistema() {
         // Inicializar a única instância do UsuarioManager usando o Singleton
-        this.usuarioManager = UsuarioManager.getInstance();
+        this.usuarioManager = UsuarioManager.getInstance(this);
         // Inicializar a única instância do EmpresaManager usando o Singleton
-        this.empresaManager = EmpresaManager.getInstance(usuarioManager);
+        this.empresaManager = EmpresaManager.getInstance(this);
         // Inicializar a única instância do ProdutoManager usando o Singleton
-        this.produtoManager = ProdutoManager.getInstance(empresaManager);
+        this.produtoManager = ProdutoManager.getInstance(this);
         // Inicializar a única instância do PedidoManager usando o Singleton
-        this.pedidosManager = PedidoManager.getInstance(empresaManager, produtoManager, usuarioManager);
+        this.pedidosManager = PedidoManager.getInstance(this);
+    }
+
+    @Override
+    public Usuario getUsuarioById(int id) throws Exception {
+        return usuarioManager.getUser(id);
+    }
+
+    @Override
+    public Empresa getEmpresaById(int id) throws Exception {
+        return empresaManager.getEmpresa(id);
+    }
+
+    @Override
+    public Produto getProdutoById(int id) throws Exception {
+        return produtoManager.getProdutoPorId(id);
+    }
+
+    @Override
+    public boolean isDonoEmpresa(int clienteId, int empresaId) throws Exception {
+        return empresaManager.isDonoEmpresa(clienteId, empresaId);
     }
 
     // Zerar o sistema

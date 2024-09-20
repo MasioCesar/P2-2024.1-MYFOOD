@@ -8,6 +8,7 @@ import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoEmpresa;
 import br.ufal.ic.p2.myfood.models.entidades.Empresa;
 import br.ufal.ic.p2.myfood.models.entidades.Usuario;
+import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.util.HashMap;
@@ -16,22 +17,22 @@ import java.util.Map;
 public class EmpresaManager {
     // Instância única da classe EmpresaManager
     private static EmpresaManager instance;
+    private Mediator mediator;
 
     private Map<Integer, Empresa> empresas;
-    private final UsuarioManager usuarioManager;
     private int nextEmpresaId = 0;
 
     // Construtor privado para evitar instanciação externa
-    private EmpresaManager(UsuarioManager usuarioManager) {
-        this.usuarioManager = usuarioManager;
+    private EmpresaManager(Mediator mediator) {
+        this.mediator = mediator;
         this.empresas = XMLEmpresa.load();
     }
 
     // Método público e estático para retornar a única instância
-    public static EmpresaManager getInstance(UsuarioManager usuarioManager) {
+    public static EmpresaManager getInstance(Mediator mediator) {
         if (instance == null) {
             // Cria a instância apenas se ela ainda não foi criada
-            instance = new EmpresaManager(usuarioManager);
+            instance = new EmpresaManager(mediator);
         }
         return instance;
     }
@@ -62,7 +63,8 @@ public class EmpresaManager {
 
     // RESTAURANTE
     public int criarRestaurante(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
-        Usuario usuario = usuarioManager.getUser(donoId);
+        // Utiliza o Mediator para obter a usuario pelo ID
+        Usuario usuario = mediator.getUsuarioById(donoId);
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
@@ -88,7 +90,7 @@ public class EmpresaManager {
 
     // MERCADO
     public int criarMercado(String tipoEmpresa, int donoId, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
-        Usuario usuario = usuarioManager.getUser(donoId);
+        Usuario usuario = mediator.getUsuarioById(donoId);
 
         if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
             throw new TipoEmpresaInvalidoException();
@@ -153,7 +155,7 @@ public class EmpresaManager {
     }
 
     public int criarFarmacia(String nome, int donoId, String endereco, boolean aberto24Horas, String tipoEmpresa) throws Exception {
-        Usuario usuario = usuarioManager.getUser(donoId);
+        Usuario usuario = mediator.getUsuarioById(donoId);
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
@@ -178,7 +180,7 @@ public class EmpresaManager {
     }
 
     public String getEmpresasDoUsuario(int idDono) throws Exception {
-        Usuario usuario = usuarioManager.getUser(idDono);
+        Usuario usuario = mediator.getUsuarioById(idDono);
 
         if (!(usuario.possuiCpf())) {
             throw new UsuarioNaoPodeCriarEmpresaException();
@@ -222,7 +224,7 @@ public class EmpresaManager {
         }
 
         // Verifica se o usuário é um DonoEmpresa
-        Usuario usuario = usuarioManager.getUser(idDono);
+        Usuario usuario = mediator.getUsuarioById(idDono);
 
         if (!usuario.possuiCpf()) {
             throw new UsuarioNaoEDonoException();

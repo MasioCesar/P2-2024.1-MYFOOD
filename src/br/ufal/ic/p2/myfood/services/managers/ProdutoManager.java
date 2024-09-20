@@ -4,6 +4,7 @@ import br.ufal.ic.p2.myfood.exceptions.Produto.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLProduto;
 import br.ufal.ic.p2.myfood.models.entidades.Empresa;
 import br.ufal.ic.p2.myfood.models.entidades.Produto;
+import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.text.DecimalFormat;
@@ -17,18 +18,18 @@ public class ProdutoManager {
     private static ProdutoManager instance;
 
     private Map<Integer, Map<Integer, Produto>> produtosPorEmpresa;
-    private final EmpresaManager empresaManager;
+    private Mediator mediator;
     private int nextProductId = 0;
 
-    public ProdutoManager(EmpresaManager empresaManager) {
-        this.empresaManager = empresaManager;
+    public ProdutoManager(Mediator mediator) {
+        this.mediator = mediator;
         this.produtosPorEmpresa = XMLProduto.load();
     }
 
-    public static ProdutoManager getInstance(EmpresaManager empresaManager) {
+    public static ProdutoManager getInstance(Mediator mediator) {
         if (instance == null) {
             // Cria a instância apenas se ela ainda não foi criada
-            instance = new ProdutoManager(empresaManager);
+            instance = new ProdutoManager(mediator);
         }
         return instance;
     }
@@ -41,7 +42,9 @@ public class ProdutoManager {
         Validate.validarProduto(nome, valor, categoria);
 
         Map<Integer, Produto> produtos = produtosPorEmpresa.getOrDefault(empresaId, new HashMap<>());
-        Empresa empresa = empresaManager.getEmpresa(empresaId);
+
+        // Utiliza o Mediator para obter a empresa pelo ID
+        Empresa empresa = mediator.getEmpresaById(empresaId);
 
         for (Produto p : produtos.values()) {
             if (p.getNome().equals(nome)) {
@@ -106,7 +109,7 @@ public class ProdutoManager {
     public String listarProdutos(int empresaId) throws Exception {
         Map<Integer, Produto> produtos = produtosPorEmpresa.get(empresaId);
 
-        Empresa empresa = empresaManager.getEmpresa(empresaId);
+        Empresa empresa = mediator.getEmpresaById(empresaId);
         if (empresa == null) {
             throw new EmpresaNaoEncontradaException();
         }

@@ -34,58 +34,6 @@ public class Facade {
         return sistema.getUsuarioManager().login(email, senha);
     }
 
-    public class RestauranteParams {
-        public String tipoEmpresa;
-        public int donoId;
-        public String nome;
-        public String endereco;
-        public String tipoCozinha;
-
-        public RestauranteParams(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) {
-            this.tipoEmpresa = tipoEmpresa;
-            this.donoId = donoId;
-            this.nome = nome;
-            this.endereco = endereco;
-            this.tipoCozinha = tipoCozinha;
-        }
-    }
-
-    public class MercadoParams {
-        public String tipoEmpresa;
-        public int donoId;
-        public String nome;
-        public String endereco;
-        public String abre;
-        public String fecha;
-        public String tipoMercado;
-
-        public MercadoParams(String tipoEmpresa, int donoId, String nome, String endereco, String abre, String fecha, String tipoMercado) {
-            this.tipoEmpresa = tipoEmpresa;
-            this.donoId = donoId;
-            this.nome = nome;
-            this.endereco = endereco;
-            this.abre = abre;
-            this.fecha = fecha;
-            this.tipoMercado = tipoMercado;
-        }
-    }
-
-    public class FarmaciaParams {
-        public String tipoEmpresa;
-        public int donoId;
-        public String nome;
-        public String endereco;
-        public boolean aberto24Horas;
-
-        public FarmaciaParams(String tipoEmpresa, int donoId, String nome, String endereco, boolean aberto24Horas) {
-            this.tipoEmpresa = tipoEmpresa;
-            this.donoId = donoId;
-            this.nome = nome;
-            this.endereco = endereco;
-            this.aberto24Horas = aberto24Horas;
-        }
-    }
-
     // SEÇÃO EMPRESAS
     public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String parametroAdicional) throws Exception {
         return sistema.getEmpresaManager().criarEmpresa(nome, donoId, endereco, parametroAdicional, tipoEmpresa);

@@ -6,6 +6,7 @@ import br.ufal.ic.p2.myfood.models.entidades.Empresa;
 import br.ufal.ic.p2.myfood.models.entidades.Pedido;
 import br.ufal.ic.p2.myfood.models.entidades.Produto;
 import br.ufal.ic.p2.myfood.models.entidades.Usuario;
+import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,22 +16,18 @@ public class PedidoManager {
     private static PedidoManager instance;
 
     private Map<Integer, Pedido> pedidosPorCliente;
-    private final UsuarioManager usuarioManager;
-    private final EmpresaManager empresaManager;
-    private final ProdutoManager produtoManager;
+    private Mediator mediator;
 
     private int pedidoNumero = 0;
 
-    public PedidoManager(EmpresaManager empresaManager, ProdutoManager produtoManager, UsuarioManager usuarioManager) {
-        this.empresaManager = empresaManager;
-        this.produtoManager = produtoManager;
-        this.usuarioManager = usuarioManager;
+    public PedidoManager(Mediator mediator) {
+        this.mediator = mediator;
         this.pedidosPorCliente = XMLPedido.load();
     }
 
-    public static PedidoManager getInstance(EmpresaManager empresaManager, ProdutoManager produtoManager, UsuarioManager usuarioManager) {
+    public static PedidoManager getInstance(Mediator mediator) {
         if (instance == null) {
-            instance = new PedidoManager(empresaManager, produtoManager, usuarioManager);
+            instance = new PedidoManager(mediator);
         }
         return instance;
     }
@@ -42,7 +39,7 @@ public class PedidoManager {
     }
 
     public int criarPedido(int clienteId, int empresaId) throws Exception {
-        if (empresaManager.isDonoEmpresa(clienteId, empresaId)) {
+        if (mediator.isDonoEmpresa(clienteId, empresaId)) {
             throw new DonoEmpresaNaoPodeFazerPedidoException();
         }
 
@@ -72,9 +69,12 @@ public class PedidoManager {
             throw new NaoEPossivelAdcionarProdutosAUmPedidoFechado();
         }
 
-        Empresa empresaDoPedido = empresaManager.getEmpresa(pedido.getEmpresa());
 
-        Produto produto = getProdutoPorId(produtoId);
+        Empresa empresaDoPedido = mediator.getEmpresaById(pedido.getEmpresa());
+
+        // Obtém o produto usando o Mediator
+        Produto produto = mediator.getProdutoById(produtoId);
+
         if (produto == null) {
             throw new ProdutoNaoEncontradoException();
         }
@@ -99,14 +99,14 @@ public class PedidoManager {
 
         switch (atributo) {
             case "cliente":
-                Usuario cliente = usuarioManager.getUser(pedido.getCliente());
+                Usuario cliente = mediator.getUsuarioById(pedido.getCliente());
                 if (cliente == null) {
                     throw new ClienteNaoEncontradoException();
                 }
                 return cliente.getNome();
 
             case "empresa":
-                Empresa empresa = empresaManager.getEmpresa(pedido.getEmpresa());
+                Empresa empresa = mediator.getEmpresaById(pedido.getEmpresa());
                 if (empresa == null) {
                     throw new EmpresaNaoEncontradaException();
                 }
@@ -164,11 +164,6 @@ public class PedidoManager {
         } else {
             throw new IndicePedidoInvalidoException();
         }
-    }
-
-
-    private Produto getProdutoPorId(int produtoId) {
-        return produtoManager.getProdutoPorId(produtoId);
     }
 
     public void salvarDados() {

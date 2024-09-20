@@ -5,6 +5,7 @@ import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUsuario;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoEmpresa;
 import br.ufal.ic.p2.myfood.models.entidades.Usuario;
+import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
 import java.util.HashMap;
@@ -13,12 +14,14 @@ import java.util.Map;
 public class UsuarioManager {
     // Instância única da classe UsuarioManager
     private static UsuarioManager instance;
+    private Mediator mediator;
 
     private Map<String, Usuario> users;
     private final Map<Integer, Usuario> usersById;
     private int nextUserId = 0;
 
-    public UsuarioManager() {
+    public UsuarioManager(Mediator mediator) {
+        this.mediator = mediator;
         this.users = XMLUsuario.load();
         this.usersById = new HashMap<>();
 
@@ -27,9 +30,9 @@ public class UsuarioManager {
         }
     }
 
-    public static UsuarioManager getInstance() {
+    public static UsuarioManager getInstance(Mediator mediator) {
         if (instance == null) {
-            instance = new UsuarioManager();
+            instance = new UsuarioManager(mediator);
         }
         return instance;
     }
