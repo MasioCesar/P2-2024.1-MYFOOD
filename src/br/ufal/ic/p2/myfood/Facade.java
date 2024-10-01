@@ -26,6 +26,11 @@ public class Facade {
         sistema.getUsuarioManager().criarUsuario(nome, email, senha, endereco, cpf);
     }
 
+    // Entregador
+    public void criarUsuario(String nome, String email, String senha, String endereco, String veiculo, String placa) throws Exception {
+        sistema.getUsuarioManager().criarUsuario(nome, email, senha, endereco, veiculo, placa);
+    }
+
     public String getAtributoUsuario(int id, String atributo) throws Exception {
         return sistema.getUsuarioManager().getAtributoUsuario(id, atributo);
     }
@@ -35,18 +40,17 @@ public class Facade {
     }
 
     // SEÇÃO EMPRESAS
-    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String parametroAdicional) throws Exception {
-        return sistema.getEmpresaManager().criarEmpresa(nome, donoId, endereco, parametroAdicional, tipoEmpresa);
+    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) throws Exception {
+        return sistema.getEmpresaManager().criarRestaurante(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
     }
 
     public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String abre, String fecha, String tipoMercado) throws Exception {
         return sistema.getEmpresaManager().criarMercado(tipoEmpresa, donoId, nome, endereco, abre, fecha, tipoMercado);
     }
 
-    /*
-    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, boolean aberto24Horas) throws Exception {
-        return sistema.getEmpresaManager().criarFarmacia(nome, donoId, endereco, aberto24Horas, tipoEmpresa);
-    }*/
+    public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, boolean aberto24Horas, int numeroFuncionarios) throws Exception {
+        return sistema.getEmpresaManager().criarFarmacia(nome, donoId, endereco, aberto24Horas, tipoEmpresa, numeroFuncionarios);
+    }
 
     public String getEmpresasDoUsuario(int idDono) throws Exception {
         return sistema.getEmpresaManager().getEmpresasDoUsuario(idDono);

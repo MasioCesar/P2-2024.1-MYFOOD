@@ -37,7 +37,11 @@ public class EmpresaManager {
         return instance;
     }
 
-    public int criarEmpresa(String nome, int donoId, String endereco, String parametroAdicional, String tipoEmpresa) throws Exception {
+    // RESTAURANTE
+    public int criarRestaurante(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
+        // Utiliza o Mediator para obter a usuario pelo ID
+        Usuario usuario = mediator.getUsuarioById(donoId);
+
         if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
             throw new TipoEmpresaInvalidoException();
         }
@@ -49,22 +53,6 @@ public class EmpresaManager {
         if (endereco == null || endereco.trim().isEmpty()) {
             throw new EnderecoInvalidoException();
         }
-
-        if (tipoEmpresa.equals("restaurante")) {
-            return criarRestaurante(nome, donoId, endereco, parametroAdicional, tipoEmpresa);
-        }
-        else if (tipoEmpresa.equals("farmacia")) {
-            return criarFarmacia(nome, donoId, endereco, Boolean.parseBoolean(parametroAdicional), tipoEmpresa);
-        }
-        else {
-            throw new TipoEmpresaInvalidoException();
-        }
-    }
-
-    // RESTAURANTE
-    public int criarRestaurante(String nome, int donoId, String endereco, String tipoCozinha, String tipoEmpresa) throws Exception {
-        // Utiliza o Mediator para obter a usuario pelo ID
-        Usuario usuario = mediator.getUsuarioById(donoId);
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
@@ -154,8 +142,20 @@ public class EmpresaManager {
         return empresaId;
     }
 
-    public int criarFarmacia(String nome, int donoId, String endereco, boolean aberto24Horas, String tipoEmpresa) throws Exception {
+    public int criarFarmacia(String nome, int donoId, String endereco, boolean aberto24Horas, String tipoEmpresa, int numeroFuncionarios) throws Exception {
         Usuario usuario = mediator.getUsuarioById(donoId);
+
+        if (tipoEmpresa == null || tipoEmpresa.trim().isEmpty()) {
+            throw new TipoEmpresaInvalidoException();
+        }
+
+        if (nome == null || nome.trim().isEmpty()) {
+            throw new NomeInvalidoException();
+        }
+
+        if (endereco == null || endereco.trim().isEmpty()) {
+            throw new EnderecoInvalidoException();
+        }
 
         for (Empresa empresaExistente : empresas.values()) {
             if (empresaExistente.getNome().equals(nome) && empresaExistente.getDonoId() != donoId) {
@@ -173,7 +173,7 @@ public class EmpresaManager {
         DonoEmpresa dono = (DonoEmpresa) usuario;
 
         int empresaId = nextEmpresaId++;
-        Empresa empresa = new Farmacia(empresaId, nome, endereco, dono.getId(), dono.getNome(), tipoEmpresa, aberto24Horas);
+        Empresa empresa = new Farmacia(empresaId, nome, endereco, dono.getId(), dono.getNome(), tipoEmpresa, aberto24Horas, numeroFuncionarios);
         empresas.put(empresaId, empresa);
 
         return empresaId;
@@ -296,6 +296,13 @@ public class EmpresaManager {
                 if (empresa.isFarmacia()) {
                     Boolean aberto24Horas = ((Farmacia) empresa).getAberto24Horas();
                     return aberto24Horas != null ? aberto24Horas.toString() : "null"; // Verificar se é nulo e converter para String
+                } else {
+                    throw new AtributoInvalidoException();
+                }
+            case "numeroFuncionarios":
+                if (empresa.isFarmacia()) {
+                    int numeroFuncionarios = ((Farmacia) empresa).getNumeroFuncionarios();
+                    return String.valueOf(numeroFuncionarios);
                 } else {
                     throw new AtributoInvalidoException();
                 }

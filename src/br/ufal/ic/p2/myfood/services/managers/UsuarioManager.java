@@ -1,6 +1,7 @@
 package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Usuario.*;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.Entregador;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUsuario;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoEmpresa;
@@ -66,6 +67,26 @@ public class UsuarioManager {
         usersById.put(usuario.getId(), usuario);
     }
 
+    // ENTREGADOR
+    public void criarUsuario(String nome, String email, String senha, String endereco, String veiculo, String placa) throws Exception {
+        if (veiculo == null || veiculo.isEmpty()) {
+            throw new VeiculoInvalidoException();
+        }
+        if (placa == null || placa.isEmpty()) {
+            throw new PlacaInvalidoException();
+        }
+
+        Validate.validarUsuario(nome, email, senha, endereco, users);
+
+        Usuario usuario;
+        int id = nextUserId++;
+
+        usuario = new Entregador(id, nome, email, senha, endereco, veiculo, placa);
+
+        users.put(email, usuario);
+        usersById.put(usuario.getId(), usuario);
+    }
+
     public int login(String email, String senha) throws Exception {
         Usuario usuario = users.get(email);
         if (usuario != null && usuario.getSenha().equals(senha)) {
@@ -97,6 +118,10 @@ public class UsuarioManager {
                 } else {
                     throw new UsuarioSemCPFException();
                 }
+            case "veiculo":
+                return ((Entregador) usuario).getVeiculo();
+            case "placa":
+                return ((Entregador) usuario).getPlaca();
             default:
                 throw new AtributoDesconhecidoException();
         }
