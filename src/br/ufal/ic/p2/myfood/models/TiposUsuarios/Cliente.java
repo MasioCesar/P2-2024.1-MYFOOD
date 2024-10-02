@@ -25,4 +25,9 @@ public class Cliente extends Usuario {
     public boolean possuiCpf() {
         return false; // Cliente não possui CPF
     }
+
+    @Override
+    public boolean isEntregador() {
+        return false;
+    }
 }

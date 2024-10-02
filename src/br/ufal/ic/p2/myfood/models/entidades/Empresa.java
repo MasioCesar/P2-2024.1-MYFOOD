@@ -1,5 +1,10 @@
 package br.ufal.ic.p2.myfood.models.entidades;
 
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.Entregador;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Empresa {
     private int id;
     private String nome;
@@ -7,6 +12,7 @@ public abstract class Empresa {
     private String tipoEmpresa;
     private int donoId;
     private String dono;
+    private List<Entregador> entregadores = new ArrayList<>();
 
     public Empresa(int id, String nome, String endereco, int donoId, String dono, String tipoEmpresa) {
         this.id = id;
@@ -67,6 +73,14 @@ public abstract class Empresa {
 
     public void setDono(String dono) {
         this.dono = dono;
+    }
+
+    public List<Entregador> getEntregadores() {
+        return entregadores;
+    }
+
+    public void adicionarEntregador(Entregador entregador) {
+        entregadores.add(entregador);
     }
 
     public abstract boolean isRestaurante();

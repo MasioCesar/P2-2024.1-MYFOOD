@@ -39,6 +39,14 @@ public class Facade {
         return sistema.getUsuarioManager().login(email, senha);
     }
 
+    public void cadastrarEntregador(int empresaId, int entregadorId) throws Exception {
+        sistema.getEmpresaManager().cadastrarEntregador(empresaId, entregadorId);
+    }
+
+    public String getEntregadores(int empresaId) throws Exception {
+        return sistema.getEmpresaManager().getEntregadores(empresaId);
+    }
+
     // SEÇÃO EMPRESAS
     public int criarEmpresa(String tipoEmpresa, int donoId, String nome, String endereco, String tipoCozinha) throws Exception {
         return sistema.getEmpresaManager().criarRestaurante(nome, donoId, endereco, tipoCozinha, tipoEmpresa);
@@ -66,6 +74,10 @@ public class Facade {
 
     public void alterarFuncionamento(int mercado, String abre, String fecha) throws Exception {
         sistema.getEmpresaManager().alterarFuncionamento(mercado, abre, fecha);
+    }
+
+    public String getEmpresas(int entregadorId) throws Exception {
+        return sistema.getEmpresaManager().getEmpresas(entregadorId);
     }
 
     // SEÇÃO PRODUTOS

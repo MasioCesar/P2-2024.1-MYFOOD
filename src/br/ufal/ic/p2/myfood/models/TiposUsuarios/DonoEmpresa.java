@@ -37,4 +37,9 @@ public class DonoEmpresa extends Usuario {
     public boolean possuiCpf() {
         return true; // DonoEmpresa possui CPF
     }
+
+    @Override
+    public boolean isEntregador() {
+        return false;
+    }
 }

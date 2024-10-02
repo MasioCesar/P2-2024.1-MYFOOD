@@ -2,6 +2,7 @@ package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Usuario.*;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Entregador;
+import br.ufal.ic.p2.myfood.models.entidades.Empresa;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLUsuario;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.Cliente;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoEmpresa;
@@ -135,6 +136,7 @@ public class UsuarioManager {
         }
         throw new UsuarioNaoEncontradoException();
     }
+
 
     private Usuario findUserById(int id) {
         return usersById.get(id);

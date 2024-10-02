@@ -1,9 +1,12 @@
 package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Empresa.*;
+import br.ufal.ic.p2.myfood.exceptions.Usuario.UsuarioNaoEncontradoException;
+import br.ufal.ic.p2.myfood.exceptions.Usuario.UsuarioNaoEntregadorException;
 import br.ufal.ic.p2.myfood.models.TiposEmpresas.Farmacia;
 import br.ufal.ic.p2.myfood.models.TiposEmpresas.Mercado;
 import br.ufal.ic.p2.myfood.models.TiposEmpresas.Restaurante;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.Entregador;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLEmpresa;
 import br.ufal.ic.p2.myfood.models.TiposUsuarios.DonoEmpresa;
 import br.ufal.ic.p2.myfood.models.entidades.Empresa;
@@ -11,7 +14,7 @@ import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 import br.ufal.ic.p2.myfood.utils.Validate;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EmpresaManager {
@@ -20,6 +23,7 @@ public class EmpresaManager {
     private Mediator mediator;
 
     private Map<Integer, Empresa> empresas;
+
     private int nextEmpresaId = 0;
 
     // Construtor privado para evitar instanciação externa
@@ -186,7 +190,7 @@ public class EmpresaManager {
             throw new UsuarioNaoPodeCriarEmpresaException();
         }
 
-        Map<Integer, Empresa> empresas = getEmpresas();
+        Map<Integer, Empresa> empresas = getAllEmpresas();
 
         StringBuilder sb = new StringBuilder();
         sb.append("{[");
@@ -232,7 +236,7 @@ public class EmpresaManager {
 
         int count = 0;
         boolean empresaEncontrada = false;
-        for (Empresa empresa : getEmpresas().values()) {
+        for (Empresa empresa : getAllEmpresas().values()) {
             if (empresa.getNome().equals(nome) && empresa.getDonoId() == usuario.getId()) {
                 empresaEncontrada = true;
                 if (count == indiceInt) {
@@ -335,14 +339,87 @@ public class EmpresaManager {
         mercadoAtual.setHorarioFechamento(fecha);
     }
 
+    public void cadastrarEntregador(int empresaId, int entregadorId) throws Exception {
+        // Primeiro, recuperar o usuário pelo ID
+        Usuario usuario = mediator.getUsuarioById(entregadorId);
+        Empresa empresa = getEmpresa(empresaId);
+
+        // Verificar se o usuário existe
+        if (usuario == null) {
+            throw new UsuarioNaoEncontradoException();
+        }
+
+        // Verificar se o usuário é um entregador
+        if (!usuario.isEntregador()) {
+            throw new UsuarioNaoEntregadorException();
+        }
+
+        Entregador entregador = (Entregador) usuario;
+        empresa.adicionarEntregador(entregador);
+    }
+
+    public String getEntregadores(int empresaId) throws Exception {
+        Empresa empresa = mediator.getEmpresaById(empresaId);
+
+        if (empresa == null) {
+            throw new EmpresaNaoCadastradaException();
+        }
+
+        List<Entregador> entregadores = empresa.getEntregadores();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{[");
+        boolean primeiro = true;
+        for (Entregador entregador : entregadores) {
+            if (!primeiro) {
+                sb.append(", ");
+            }
+            sb.append(entregador.getEmail());
+            primeiro = false;
+        }
+        sb.append("]}");
+
+        return sb.toString();
+    }
+
 
     public Empresa getEmpresa(int empresaId) {
         return empresas.get(empresaId);
     }
 
-    public Map<Integer, Empresa> getEmpresas() {
+    public Map<Integer, Empresa> getAllEmpresas() {
         return empresas;
     }
+
+    public String getEmpresas(int entregadorId) throws Exception {
+        Usuario usuario = mediator.getUsuarioById(entregadorId);
+
+        if (!usuario.isEntregador()) {
+            throw new UsuarioNaoEntregadorException();
+        }
+
+        Entregador entregador = (Entregador) usuario;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("{[");
+
+        boolean primeiro = true;
+
+        for (Empresa empresa : empresas.values()) {
+            if (empresa.getEntregadores().contains(entregador)) {
+                if (!primeiro) {
+                    sb.append(", ");
+                }
+                sb.append("[").append(empresa.getNome()).append(", ").append(empresa.getEndereco()).append("]");
+                primeiro = false;
+            }
+        }
+
+        sb.append("]}");
+
+        return sb.toString();
+    }
+
 
     public void zerarSistema() {
         nextEmpresaId = 0;

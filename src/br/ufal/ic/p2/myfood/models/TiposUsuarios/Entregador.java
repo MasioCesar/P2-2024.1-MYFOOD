@@ -47,4 +47,9 @@ public class Entregador extends Usuario {
     public void setPlaca(String placa) {
         this.placa = placa;
     }
+
+    @Override
+    public boolean isEntregador() {
+        return true;
+    }
 }
