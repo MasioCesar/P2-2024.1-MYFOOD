@@ -1,11 +1,11 @@
 package br.ufal.ic.p2.myfood.services.managers;
 
 import br.ufal.ic.p2.myfood.exceptions.Pedido.*;
+import br.ufal.ic.p2.myfood.exceptions.Usuario.NaoEntregadorValidoException;
+import br.ufal.ic.p2.myfood.exceptions.Usuario.UsuarioNaoEntregadorException;
+import br.ufal.ic.p2.myfood.models.TiposUsuarios.Entregador;
+import br.ufal.ic.p2.myfood.models.entidades.*;
 import br.ufal.ic.p2.myfood.services.XMLFunctions.XMLPedido;
-import br.ufal.ic.p2.myfood.models.entidades.Empresa;
-import br.ufal.ic.p2.myfood.models.entidades.Pedido;
-import br.ufal.ic.p2.myfood.models.entidades.Produto;
-import br.ufal.ic.p2.myfood.models.entidades.Usuario;
 import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 
 import java.util.*;
@@ -19,6 +19,7 @@ public class PedidoManager {
     private Mediator mediator;
 
     private int pedidoNumero = 0;
+    private int contadorEntrega = 0;
 
     public PedidoManager(Mediator mediator) {
         this.mediator = mediator;
@@ -35,6 +36,7 @@ public class PedidoManager {
     public void zerarSistema() {
         pedidosPorCliente.clear();
         pedidoNumero = 0;
+        contadorEntrega = 0;
         XMLPedido.save(pedidosPorCliente); // Persistir a limpeza do sistema
     }
 
@@ -57,7 +59,6 @@ public class PedidoManager {
         return numero;
     }
 
-
     public void adicionarProduto(int numeroPedido, int produtoId) throws Exception {
         Pedido pedido = pedidosPorCliente.get(numeroPedido);
 
@@ -68,7 +69,6 @@ public class PedidoManager {
         if (pedido.getEstado().equals("preparando")) {
             throw new NaoEPossivelAdcionarProdutosAUmPedidoFechado();
         }
-
 
         Empresa empresaDoPedido = mediator.getEmpresaById(pedido.getEmpresa());
 
@@ -123,7 +123,6 @@ public class PedidoManager {
 
             case "valor":
                 double valorTotal = pedido.calcularValor();
-                // Format the value to ensure two decimal places
                 return String.format(Locale.US, "%.2f", valorTotal);
 
             default:
@@ -164,6 +163,148 @@ public class PedidoManager {
         } else {
             throw new IndicePedidoInvalidoException();
         }
+    }
+
+    public Pedido getPedidoById(int id) {
+        return pedidosPorCliente.get(id);
+    }
+
+    public void liberarPedido(int numeroPedido) throws Exception {
+        Pedido pedido = getPedidoById(numeroPedido);
+
+        if (Objects.equals(pedido.getEstado(), "pronto")) {
+            throw new PedidoJaLiberadoException();
+        }
+
+        if (!Objects.equals(pedido.getEstado(), "preparando")) {
+            throw new NaoPossivelLiberarProdutoNaoPreparadoException();
+        }
+
+        pedido.setEstado("pronto");
+    }
+
+    public List<Pedido> getPedidosByEmpresaId(int empresaId) {
+        return pedidosPorCliente.values().stream()
+                .filter(pedido -> pedido.getEmpresa() == empresaId)
+                .collect(Collectors.toList());
+    }
+
+    public int obterPedido(int entregadorId) throws Exception {
+        Usuario usuario = mediator.getUsuarioById(entregadorId);
+
+        if (!usuario.isEntregador()) {
+            throw new UsuarioNaoEntregadorException();
+        }
+
+        Entregador entregador = (Entregador) usuario;
+        Pedido pedidoPrioritario = null;
+
+        boolean isInAnyCompany = false;
+
+        for (Map.Entry<Integer, Empresa> entry : mediator.getAllEmpresas().entrySet()) {
+            Empresa empresa = entry.getValue();
+
+            if (empresa.getEntregadores().contains(entregador)) {
+                isInAnyCompany = true;
+
+                List<Pedido> pedidosEmpresa = getPedidosByEmpresaId(empresa.getId());
+
+                for (Pedido pedido : pedidosEmpresa) {
+                    if (pedido.getEstado().equals("pronto")) {
+                        if (empresa.isFarmacia() || (pedidoPrioritario == null && !empresa.isFarmacia())) {
+                            pedidoPrioritario = pedido;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!isInAnyCompany) {
+            throw new EntregadorNaoEstaNenhumaEmpresaException();
+        }
+
+        if (pedidoPrioritario == null) {
+            throw new NaoExistePedidoParaEntregaException();
+        }
+
+        return pedidoPrioritario.getNumero();
+    }
+
+    public int criarEntrega(int pedidoNumero, int entregadorId, String destino) throws Exception {
+        Usuario usuario = mediator.getUsuarioById(entregadorId);
+        Pedido pedido = getPedidoById(pedidoNumero);
+
+
+        if (!pedido.getEstado().equals("pronto")) {
+            throw new PedidoNaoProntoParaEntregaException();
+        }
+
+        if (!usuario.isEntregador()) {
+            throw new NaoEntregadorValidoException();
+        }
+
+        if (((Entregador) usuario).estaOcupado()) {
+            throw new EntregadorEmEntregaException();
+        }
+
+        int entregaId = contadorEntrega++;
+
+        Entrega entrega = new Entrega(entregaId, pedido, entregadorId, destino, mediator);
+
+        pedido.iniciarEntrega(entrega);
+
+        ((Entregador) usuario).setOcupado(true);
+
+        return entregaId;
+    }
+
+    public Entrega getEntregaById(int entregaId) throws Exception {
+        for (Pedido pedido : pedidosPorCliente.values()) {
+            if (pedido.getEntrega() != null && pedido.getEntrega().getEntregaId() == entregaId) {
+                return pedido.getEntrega();
+            }
+        }
+        throw new NaoExisteEntregaException();
+    }
+
+    public Object getAtributoEntrega(int entregaId, String atributo) throws Exception {
+        Entrega entrega = getEntregaById(entregaId);
+
+        if (atributo == null || atributo.trim().isEmpty()) {
+            throw new AtributoInvalidoException();
+        }
+
+        return switch (atributo.toLowerCase()) {
+            case "cliente" -> mediator.getUsuarioById(entrega.getPedido().getCliente()).getNome();
+            case "empresa" -> mediator.getEmpresaById(entrega.getPedido().getEmpresa()).getNome();
+            case "pedido" -> String.valueOf(entrega.getPedido().getNumero());
+            case "estado" -> entrega.getPedido().getEstado();
+            case "destino" -> entrega.getDestino();
+            case "entregador" -> mediator.getUsuarioById(entrega.getEntregadorId()).getNome();
+            case "produtos" -> "{[" + entrega.getPedido().getProdutos().stream()
+                    .map(Produto::getNome)
+                    .collect(Collectors.joining(", ")) + "]}";
+            default -> throw new AtributoInvalidoException();
+        };
+    }
+
+    public int getIdEntrega(int pedidoNumero) throws Exception {
+        for (Pedido pedido : pedidosPorCliente.values()) {
+            if (pedido.getNumero() == pedidoNumero) {
+                if (pedido.getEntrega() != null) {
+                    return pedido.getEntrega().getEntregaId();
+                } else {
+                    throw new NaoExisteEntregaException();
+                }
+            }
+        }
+        throw new NaoExisteEntregaException();
+    }
+
+    public void entregar(int entregaId) throws Exception {
+        Entrega entrega = getEntregaById(entregaId);
+
+        entrega.finalizarEntrega();
     }
 
     public void salvarDados() {

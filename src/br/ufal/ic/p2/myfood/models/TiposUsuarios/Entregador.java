@@ -6,9 +6,11 @@ public class Entregador extends Usuario {
     private String endereco;
     private String veiculo;
     private String placa;
+    private boolean ocupado;
 
     public Entregador() {
         super();
+        this.ocupado = false;
     }
 
     public Entregador(int id, String nome, String email, String senha, String endereco, String veiculo, String placa) {
@@ -16,6 +18,7 @@ public class Entregador extends Usuario {
         this.endereco = endereco;
         this.veiculo = veiculo;
         this.placa = placa;
+        this.ocupado = false;
     }
 
     @Override
@@ -51,5 +54,13 @@ public class Entregador extends Usuario {
     @Override
     public boolean isEntregador() {
         return true;
+    }
+
+    public boolean estaOcupado() {
+        return ocupado;
+    }
+
+    public void setOcupado(boolean ocupado) {
+        this.ocupado = ocupado;
     }
 }

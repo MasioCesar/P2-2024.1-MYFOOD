@@ -1,6 +1,7 @@
 package br.ufal.ic.p2.myfood;
 
 import br.ufal.ic.p2.myfood.models.Sistema;
+import br.ufal.ic.p2.myfood.models.entidades.Entrega;
 
 import java.util.Objects;
 
@@ -120,6 +121,31 @@ public class Facade {
 
     public int getNumeroPedido(int cliente, int empresa, int indice) throws Exception {
         return sistema.getPedidosManager().getNumeroPedido(cliente, empresa, indice);
+    }
+
+    public void liberarPedido(int numeroPedido) throws Exception {
+        sistema.getPedidosManager().liberarPedido(numeroPedido);
+    }
+
+    public int obterPedido(int entregadorId) throws Exception {
+        return sistema.getPedidosManager().obterPedido(entregadorId);
+
+    }
+
+    public int criarEntrega(int pedido, int entregador, String destino) throws Exception {
+        return sistema.getPedidosManager().criarEntrega(pedido, entregador, destino);
+    }
+
+    public Object getEntrega(int entregaId, String atributo) throws Exception {
+        return sistema.getPedidosManager().getAtributoEntrega(entregaId, atributo);
+    }
+
+    public int getIdEntrega(int pedidoId) throws Exception {
+        return sistema.getPedidosManager().getIdEntrega(pedidoId);
+    }
+
+    public void entregar(int entregaId) throws Exception {
+        sistema.getPedidosManager().entregar(entregaId);
     }
 
     // Encerrar o sistema

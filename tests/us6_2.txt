@@ -23,7 +23,7 @@ expect "2" getAtributoEmpresa empresa=${eid4} atributo="numeroFuncionarios"
 
 expect "Lucas" getPedidos pedido=${pe1} atributo="cliente"
 expect "Farmacia 24 horas do Carlos"  getPedidos pedido=${pe1} atributo="empresa"
-expect "preperando" getPedidos pedido=${pe1} atributo="estado"
+expect "preparando" getPedidos pedido=${pe1} atributo="estado"
 expect "{[Paracetamol, Agua Oxigenada, Band-Aid]}" getPedidos pedido=${pe1} atributo="produtos"
 expect "8.90"  getPedidos pedido=${pe1} atributo="valor"
 

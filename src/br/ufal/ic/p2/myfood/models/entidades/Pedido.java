@@ -1,5 +1,8 @@
 package br.ufal.ic.p2.myfood.models.entidades;
 
+import br.ufal.ic.p2.myfood.exceptions.Pedido.ProdutoInvalidoException;
+import br.ufal.ic.p2.myfood.exceptions.Pedido.ProdutoNaoEncontradoException;
+
 import java.util.*;
 
 public class Pedido {
@@ -8,6 +11,7 @@ public class Pedido {
     private int empresa;
     private String estado;
     private List<Produto> produtos = new ArrayList<>();
+    private Entrega entrega;
 
     public Pedido(int numero, int cliente, int empresa, String estado) {
         this.numero = numero;
@@ -64,9 +68,13 @@ public class Pedido {
         this.produtos = produtos;
     }
 
-    public void removerProduto(String nomeProduto) {
+    public void setEntrega(Entrega entrega) {
+        this.entrega = entrega;
+    }
+
+    public void removerProduto(String nomeProduto) throws Exception {
         if (nomeProduto == null || nomeProduto.trim().isEmpty()) {
-            throw new IllegalArgumentException("Produto invalido");
+            throw new ProdutoInvalidoException();
         }
 
         Iterator<Produto> iterator = produtos.iterator();
@@ -78,13 +86,26 @@ public class Pedido {
             }
         }
 
-        throw new IllegalArgumentException("Produto nao encontrado");
+        throw new ProdutoNaoEncontradoException();
     }
 
     public double calcularValor() {
         return produtos.stream()
                 .mapToDouble(Produto::getValor)
                 .sum();
+    }
+
+    public void iniciarEntrega(Entrega entrega) {
+        this.entrega = entrega;
+        this.estado = "entregando";
+    }
+
+    public Entrega getEntrega() {
+        return entrega;
+    }
+
+    public void finalizarEntrega() {
+        this.estado = "entregue";
     }
 
 }

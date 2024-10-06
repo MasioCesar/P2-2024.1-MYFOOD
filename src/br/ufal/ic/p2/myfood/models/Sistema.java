@@ -9,6 +9,8 @@ import br.ufal.ic.p2.myfood.services.managers.ProdutoManager;
 import br.ufal.ic.p2.myfood.services.managers.UsuarioManager;
 import br.ufal.ic.p2.myfood.services.mediator.Mediator;
 
+import java.util.Map;
+
 public class Sistema implements Mediator {
 
     private UsuarioManager usuarioManager;
@@ -17,13 +19,10 @@ public class Sistema implements Mediator {
     private PedidoManager pedidosManager;
 
     public Sistema() {
-        // Inicializar a única instância do UsuarioManager usando o Singleton
+        // Inicializar a única instância
         this.usuarioManager = UsuarioManager.getInstance(this);
-        // Inicializar a única instância do EmpresaManager usando o Singleton
         this.empresaManager = EmpresaManager.getInstance(this);
-        // Inicializar a única instância do ProdutoManager usando o Singleton
         this.produtoManager = ProdutoManager.getInstance(this);
-        // Inicializar a única instância do PedidoManager usando o Singleton
         this.pedidosManager = PedidoManager.getInstance(this);
     }
 
@@ -45,6 +44,11 @@ public class Sistema implements Mediator {
     @Override
     public boolean isDonoEmpresa(int clienteId, int empresaId) throws Exception {
         return empresaManager.isDonoEmpresa(clienteId, empresaId);
+    }
+
+    @Override
+    public Map<Integer, Empresa> getAllEmpresas() throws Exception {
+        return empresaManager.getAllEmpresas();
     }
 
     // Zerar o sistema

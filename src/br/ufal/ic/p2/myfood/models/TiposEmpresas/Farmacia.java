@@ -28,6 +28,10 @@ public class Farmacia extends Empresa {
         this.numeroFuncionarios = numeroFuncionarios;
     }
 
+    public void setAberto24Horas(boolean aberto24Horas) {
+        this.aberto24Horas = aberto24Horas;
+    }
+
     @Override
     public boolean isRestaurante() {
         return false;
