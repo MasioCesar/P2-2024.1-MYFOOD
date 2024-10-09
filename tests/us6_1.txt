@@ -68,9 +68,9 @@ expectError "Empresa com esse nome ja existe" criarEmpresa tipoEmpresa="farmacia
 
 expectError "Proibido cadastrar duas empresas com o mesmo nome e local" criarEmpresa tipoEmpresa="farmacia"  dono=${id2} nome="Farmacia do Carlos" endereco="Rua Segura N 123"  aberto24Horas=false numeroFuncionarios=2
 
-eid3=criarEmpresa tipoEmpresa="farmacia"  dono=${id2} nome="Nova farmacia do Carlos" endereco="Rua Otima N 852" aberto24Horas=true numeroFuncionarios=2
+eid3=criarEmpresa tipoEmpresa="farmacia"  dono=${id2} nome="Farmacia 24 horas do Carlos" endereco="Rua Otima N 852" aberto24Horas=true numeroFuncionarios=2
 
-expectError "Tipo de empresa invalido" criarEmpresa tipoEmpresa=  dono=${id2} nome="Mercado do Carlos" endereco="Rua Otima N 852" aberto24Horas=false
+expectError "Tipo de empresa invalido" criarEmpresa tipoEmpresa=  dono=${id2} nome="Mercado do Carlos" endereco="Rua Otima N 852" aberto24Horas=false numeroFuncionarios=2
 expectError "Nome invalido" criarEmpresa tipoEmpresa="farmacia"  dono=${id2} nome= endereco="Rua Otima N 852" aberto24Horas=false numeroFuncionarios=2
 expectError "Endereco da empresa invalido" criarEmpresa tipoEmpresa="farmacia"  dono=${id2} nome="Mercado do Carlos" endereco= aberto24Horas=false numeroFuncionarios=2
 
@@ -87,8 +87,8 @@ eid4=criarEmpresa tipoEmpresa="farmacia" dono=${id3} nome="Farmacia do Roberto" 
 
 expect "Farmacia do Roberto" getAtributoEmpresa empresa=${eid4} atributo="nome"
 expect "Rua Segura N 123" getAtributoEmpresa empresa=${eid4} atributo="endereco"
-expect false getAtributoEmpresa empresa=${eid4} atributo="aberto24Horas"
-expect true getAtributoEmpresa empresa=${eid1} atributo="aberto24Horas"
+expect "false" getAtributoEmpresa empresa=${eid4} atributo="aberto24Horas"
+expect "true" getAtributoEmpresa empresa=${eid1} atributo="aberto24Horas"
 expect "RobertoDono" getAtributoEmpresa empresa=${eid4} atributo="dono"
 expect "2" getAtributoEmpresa empresa=${eid4} atributo="numeroFuncionarios"
 expectError "Atributo invalido" getAtributoEmpresa empresa=${eid4} atributo="vizinhos"

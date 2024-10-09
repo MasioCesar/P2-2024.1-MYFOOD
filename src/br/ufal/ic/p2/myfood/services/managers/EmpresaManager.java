@@ -125,7 +125,7 @@ public class EmpresaManager {
         }
 
         if (Validate.horariosInvalidos(abre, fecha)) {
-            throw new HorariosInvalidosException();
+            throw new HorarioInvalidoException();
         }
 
         for (Empresa empresaExistente : empresas.values()) {
@@ -317,7 +317,7 @@ public class EmpresaManager {
 
     public void alterarFuncionamento(int mercado, String abre, String fecha) throws Exception {
         if (abre == null || abre.trim().isEmpty() || fecha == null || fecha.trim().isEmpty()) {
-            throw new HorariosInvalidosException();
+            throw new HorarioInvalidoException();
         }
 
         if (!Validate.isHoraValida(abre) || !Validate.isHoraValida(fecha)) {
@@ -325,7 +325,7 @@ public class EmpresaManager {
         }
 
         if (Validate.horariosInvalidos(abre, fecha)) {
-            throw new HorariosInvalidosException();
+            throw new HorarioInvalidoException();
         }
 
         Empresa empresa = getEmpresa(mercado);

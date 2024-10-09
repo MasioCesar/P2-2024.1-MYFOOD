@@ -6,18 +6,19 @@ id3=login email="roberto@ufal.com.br" senha="123senha"
 
 eid1=getIdEmpresa idDono=${id2} nome="Farmacia 24 horas do Carlos" indice=0
 eid2=getIdEmpresa idDono=${id2} nome="Farmacia do Carlos" indice=0
+eid3=getIdEmpresa idDono=${id2} nome="Farmacia 24 horas do Carlos" indice=1
 eid4=getIdEmpresa idDono=${id3} nome="Farmacia do Roberto" indice=0
 
 pe1=getNumeroPedido cliente=${id1} empresa=${eid1} indice=0
 pe2=getNumeroPedido cliente=${id1} empresa=${eid2} indice=0
 
-expect "{[[Farmacia 24 horas do Carlos, Rua Segura N 123], [Farmacia do Carlos, Rua Segura N 123], [Nova farmacia do Carlos, Rua Otima N 852]]}" getEmpresasDoUsuario idDono=${id2}
+expect "{[[Farmacia 24 horas do Carlos, Rua Segura N 123], [Farmacia do Carlos, Rua Segura N 123], [Farmacia 24 horas do Carlos, Rua Otima N 852]]}" getEmpresasDoUsuario idDono=${id2}
 expect "{[[Farmacia do Roberto, Rua Segura N 123]]}" getEmpresasDoUsuario idDono=${id3}
 
 expect "Farmacia do Roberto" getAtributoEmpresa empresa=${eid4} atributo="nome"
 expect "Rua Segura N 123" getAtributoEmpresa empresa=${eid4} atributo="endereco"
-expect false getAtributoEmpresa empresa=${eid4} atributo="aberto24Horas"
-expect true getAtributoEmpresa empresa=${eid1} atributo="aberto24Horas"
+expect "false" getAtributoEmpresa empresa=${eid4} atributo="aberto24Horas"
+expect "true" getAtributoEmpresa empresa=${eid1} atributo="aberto24Horas"
 expect "RobertoDono" getAtributoEmpresa empresa=${eid4} atributo="dono"
 expect "2" getAtributoEmpresa empresa=${eid4} atributo="numeroFuncionarios"
 

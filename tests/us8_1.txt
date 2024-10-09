@@ -110,7 +110,7 @@ expectError "Nao e possivel liberar um produto que nao esta sendo preparado" lib
 # testes de todas as combinações importantes para o comando obterPedido.
 ###################
 
-expectError "usuario nao e entregador." obterPedido entregador=${id1}
+expectError "Usuario nao e um entregador" obterPedido entregador=${id1}
 expectError "Entregador nao estar em nenhuma empresa." obterPedido entregador=${id3}
 
 # O mesmo pedido aparece para todos os entregadores que estão vinculados a empresa que tem o pedido pronto, 
