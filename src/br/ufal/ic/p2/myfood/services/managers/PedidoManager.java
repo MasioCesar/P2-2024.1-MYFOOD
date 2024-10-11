@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class PedidoManager {
-    // Instância única da classe ProdutoManager
+    // Instância única da classe PedidoManager
     private static PedidoManager instance;
 
     private Map<Integer, Pedido> pedidosPorCliente;
