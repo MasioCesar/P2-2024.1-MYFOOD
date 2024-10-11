@@ -230,6 +230,8 @@ public class PedidoManager {
         return pedidoPrioritario.getNumero();
     }
 
+    // FUNCOES DE ENTREGA
+
     public int criarEntrega(int pedidoNumero, int entregadorId, String destino) throws Exception {
         Usuario usuario = mediator.getUsuarioById(entregadorId);
         Pedido pedido = getPedidoById(pedidoNumero);
@@ -245,6 +247,11 @@ public class PedidoManager {
 
         if (((Entregador) usuario).estaOcupado()) {
             throw new EntregadorEmEntregaException();
+        }
+
+        if (destino == null || destino.trim().isEmpty()) {
+            Usuario cliente = mediator.getUsuarioById(pedido.getCliente());
+            destino = cliente.getEndereco();
         }
 
         int entregaId = contadorEntrega++;

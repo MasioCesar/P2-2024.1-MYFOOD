@@ -26,27 +26,21 @@ public class Sistema implements Mediator {
         this.pedidosManager = PedidoManager.getInstance(this);
     }
 
-    @Override
     public Usuario getUsuarioById(int id) throws Exception {
         return usuarioManager.getUser(id);
     }
 
-    @Override
     public Empresa getEmpresaById(int id) throws Exception {
         return empresaManager.getEmpresa(id);
     }
 
-    @Override
     public Produto getProdutoById(int id) throws Exception {
         return produtoManager.getProdutoPorId(id);
     }
 
-    @Override
     public boolean isDonoEmpresa(int clienteId, int empresaId) throws Exception {
         return empresaManager.isDonoEmpresa(clienteId, empresaId);
     }
-
-    @Override
     public Map<Integer, Empresa> getAllEmpresas() throws Exception {
         return empresaManager.getAllEmpresas();
     }
