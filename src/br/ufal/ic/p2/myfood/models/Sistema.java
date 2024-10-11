@@ -20,7 +20,7 @@ public class Sistema implements Mediator {
 
     public Sistema() {
         // Inicializar a única instância
-        this.usuarioManager = UsuarioManager.getInstance(this);
+        this.usuarioManager = UsuarioManager.getInstance();
         this.empresaManager = EmpresaManager.getInstance(this);
         this.produtoManager = ProdutoManager.getInstance(this);
         this.pedidosManager = PedidoManager.getInstance(this);

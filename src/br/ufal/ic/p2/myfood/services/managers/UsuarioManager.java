@@ -16,14 +16,12 @@ import java.util.Map;
 public class UsuarioManager {
     // Instância única da classe UsuarioManager
     private static UsuarioManager instance;
-    private Mediator mediator;
 
     private Map<String, Usuario> users;
     private final Map<Integer, Usuario> usersById;
     private int nextUserId = 0;
 
-    public UsuarioManager(Mediator mediator) {
-        this.mediator = mediator;
+    public UsuarioManager() {
         this.users = XMLUsuario.load();
         this.usersById = new HashMap<>();
 
@@ -32,9 +30,9 @@ public class UsuarioManager {
         }
     }
 
-    public static UsuarioManager getInstance(Mediator mediator) {
+    public static UsuarioManager getInstance() {
         if (instance == null) {
-            instance = new UsuarioManager(mediator);
+            instance = new UsuarioManager();
         }
         return instance;
     }
