@@ -27,6 +27,8 @@ O propósito do projeto é construir um sistema de delivery onde usuários possa
 
   * **Donos de Empresa**: Podem criar e gerenciar suas empresas, adicionar e editar produtos. Além de poder recuperar informacões sobre sua empresa.
 
+  * **Entregadores**: Podem ser cadastrados na empresa como entregador, e realizar as entregas dos pedidos das empresas em que estão cadastrados.
+
 O sistema é projetado para ser eficiente e fácil de usar, simplificando a gestão de empresas, produtos e pedidos em um ambiente de restaurante. O gerenciamento é feito através de uma interface centralizada, facilitando o acesso e a manipulação dos dados.
 
 ## Como Executar
