@@ -220,7 +220,7 @@ public class PedidoManager {
         }
 
         if (!isInAnyCompany) {
-            throw new EntregadorNaoEstaNenhumaEmpresaException();
+            throw new EntregadorNenhumaEmpresaException();
         }
 
         if (pedidoPrioritario == null) {
@@ -271,7 +271,7 @@ public class PedidoManager {
                 return pedido.getEntrega();
             }
         }
-        throw new NaoExisteEntregaException();
+        throw new NaoExisteNadaEntregueIdException();
     }
 
     public Object getAtributoEntrega(int entregaId, String atributo) throws Exception {
@@ -291,7 +291,7 @@ public class PedidoManager {
             case "produtos" -> "{[" + entrega.getPedido().getProdutos().stream()
                     .map(Produto::getNome)
                     .collect(Collectors.joining(", ")) + "]}";
-            default -> throw new AtributoInvalidoException();
+            default -> throw new AtributoNaoExisteException();
         };
     }
 
