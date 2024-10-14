@@ -19,13 +19,15 @@ O propósito do projeto é construir um sistema de delivery onde usuários possa
 
 * **Gerenciamento de Produtos**: As empresas podem gerenciar seus produtos, incluindo a criação, edição e listagem de produtos. O sistema garante que os produtos sejam corretamente catalogados e suas informações estejam atualizadas.
 
-* **Gerenciamento de Pedidos**: O sistema permite a criação e atualização de status dos pedidos. Os pedidos podem incluir múltiplos produtos e devem ser monitorados desde a criação até o fechamento.
+* **Gerenciamento de Pedidos**: O sistema permite a criação, a atualização de status dos pedidos e a entrega desses pedidos. Os pedidos podem incluir múltiplos produtos e devem ser monitorados desde a criação até o fechamento.
 
-* **Gerenciamento de Usuários**: O sistema gerencia dois tipos distintos de usuários: clientes e donos de restaurante. As funcionalidades são adaptadas às necessidades de cada tipo:
+* **Gerenciamento de Usuários**: O sistema gerencia três tipos distintos de usuários: clientes, donos de empresa e entregadores. As funcionalidades são adaptadas às necessidades de cada tipo:
 
   * **Clientes**: Podem criar e gerenciar suas contas, realizar pedidos e acessar informações relacionadas aos seus pedidos. O sistema oferece autenticação de login e recuperação de informações de conta para garantir que cada cliente possa acessar e atualizar seus dados de forma segura.
 
-  * **Donos de Restaurante**: Podem criar e gerenciar suas empresas, adicionar e editar produtos. Além de poder recuperar informacões sobre sua empresa.
+  * **Donos de Empresa**: Podem criar e gerenciar suas empresas, adicionar e editar produtos. Além de poder recuperar informacões sobre sua empresa.
+
+  * **Entregadores**: Podem ser cadastrados na empresa como entregador, e realizar as entregas dos pedidos das empresas em que estão cadastrados.
 
 O sistema é projetado para ser eficiente e fácil de usar, simplificando a gestão de empresas, produtos e pedidos em um ambiente de restaurante. O gerenciamento é feito através de uma interface centralizada, facilitando o acesso e a manipulação dos dados.
 
