@@ -75,6 +75,15 @@ public class UsuarioManager {
             throw new PlacaInvalidoException();
         }
 
+        for (Usuario user : users.values()) {
+            if (user.isEntregador()) {
+                Entregador entregador = (Entregador) user;
+                if (entregador.getPlaca().equals(placa)) {
+                    throw new PlacaInvalidoException();
+                }
+            }
+        }
+
         Validate.validarUsuario(nome, email, senha, endereco, users);
 
         Usuario usuario;
